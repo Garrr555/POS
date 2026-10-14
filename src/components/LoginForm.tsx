@@ -98,7 +98,7 @@ const LoginForm = ({ role, title, subtitle }: Props) => {
                 name="email"
                 required
                 placeholder="john@example.com"
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
               />
             </div>
             <div className=" ">
@@ -113,7 +113,7 @@ const LoginForm = ({ role, title, subtitle }: Props) => {
                   name="password"
                   required
                   placeholder="****************"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                 />
                 <button
                   type="button"
@@ -126,7 +126,7 @@ const LoginForm = ({ role, title, subtitle }: Props) => {
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-md text-sm font-semibold hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center"
+              className="w-full py-3 bg-linear-to-r from-orange-600 to-orange-500 text-white rounded-md text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center"
             >
               Sign In
             </button>
