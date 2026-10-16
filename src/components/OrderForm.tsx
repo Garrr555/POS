@@ -27,6 +27,7 @@ const OrderForm = ({
   onCancel,
 }: OrderFormProps) => {
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [name, setName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
 
   const availableProducts = useMemo(
@@ -74,6 +75,7 @@ const OrderForm = ({
 
     try {
       const orderData: CreateOrderRequest = {
+        name,
         paymentMethod,
         items: cartItems.map((item) => ({
           eventId: item.product.ID,
@@ -97,29 +99,53 @@ const OrderForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
-          Metode Pembayaran
-        </label>
+      <div className="flex items-center justify-center mx-auto w-full gap-5">
+        <div className="w-full">
+          <label
+            htmlFor=""
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Nama Pembeli
+          </label>
+          <input
+            type="text"
+            placeholder="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+          />
+        </div>
 
-        <select
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
-          required
-        >
-          <option value="cash">Cash / Tunai</option>
-          <option value="qris">QRIS</option>
-          <option value="transfer">Transfer Bank</option>
-          <option value="debit">Kartu Debit</option>
-          <option value="credit">Kartu Kredit</option>
-        </select>
+        <div className="w-full">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Metode Pembayaran
+          </label>
+
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+            required
+          >
+            <option value="cash">Cash / Tunai</option>
+            <option value="qris">QRIS</option>
+            <option value="transfer">Transfer Bank</option>
+            <option value="debit">Kartu Debit</option>
+            <option value="credit">Kartu Kredit</option>
+          </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Product Catalog */}
         <section>
-          <h3 className="mb-3 font-semibold text-slate-800">Pilih Produk</h3>
+          <h3 className="font-semibold text-slate-800">Pilih Produk</h3>
+          <input
+            type="text"
+            placeholder="Cari Menu"
+            className="my-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+          />
 
           <div className="max-h-[420px] space-y-3 overflow-y-auto pr-1">
             {availableProducts.length > 0 ? (
@@ -131,18 +157,25 @@ const OrderForm = ({
                     key={product.ID}
                     className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3"
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-800">
-                        {product.name}
-                      </p>
+                    <div className="flex gap-3">
+                      <img
+                        src={product.image}
+                        width={100}
+                        className="bg-cover rounded-lg"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-800">
+                          {product.name}
+                        </p>
 
-                      <p className="mt-1 text-sm text-orange-600">
-                        {formatRupiah(Number(product.price) || 0)}
-                      </p>
+                        <p className="mt-1 text-sm text-orange-600">
+                          {formatRupiah(Number(product.price) || 0)}
+                        </p>
 
-                      <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
-                        {product.type}
-                      </span>
+                        <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
+                          {product.type}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">

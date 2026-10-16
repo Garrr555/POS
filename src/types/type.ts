@@ -106,6 +106,7 @@ export interface OrderType {
   CreatedAt: string;
   UpdatedAt: string;
   DeletedAt: null | string;
+  name: string;
 
   orderNumber: string;
 
@@ -142,6 +143,14 @@ export interface CreateOrderItemRequest {
 }
 
 export interface CreateOrderRequest {
-  paymentMethod: string;
+  name: string;
   items: CreateOrderItemRequest[];
+  paymentMethod: string;
+}
+
+export interface UpdateOrderRequest {
+  name: string;
+  items: CreateOrderItemRequest[];
+  paymentMethod: string;
+  status: string;
 }

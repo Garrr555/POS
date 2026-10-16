@@ -15,14 +15,14 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-orange-50 text-gray-900">
       {/* Navbar */}
-      <nav className="border-b border-orange-100 bg-white">
+      <nav className="border-b border-orange-100 bg-white fixed w-full z-50">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-white">
               <ShoppingCart size={20} />
             </div>
 
-            <span className="text-xl font-bold text-orange-600">POS App</span>
+            <span className="text-xl font-bold text-orange-600">Peace POS</span>
           </div>
 
           <Link
@@ -166,7 +166,7 @@ const LandingPage = () => {
               to="/login"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-orange-600 transition hover:bg-orange-50"
             >
-              Masuk ke POS
+              Masuk ke Peace POS
               <ArrowRight size={18} />
             </Link>
           </div>
@@ -176,7 +176,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="border-t border-orange-100 bg-white px-6 py-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between text-sm text-gray-500">
-          <p>© 2026 POS App</p>
+          <p>© 2026 Peace POS</p>
           <p>Simple. Fast. Efficient.</p>
         </div>
       </footer>

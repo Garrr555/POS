@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
+
 import {
   Eye,
   Pencil,
@@ -17,10 +20,7 @@ type StockCardProps = {
   onEdit: (employee: EventType) => void;
   onDelete: (employee: EventType) => void;
   onDetail: (employee: EventType) => void;
-  onStockChange: (
-    employee: EventType,
-    difference: number,
-  ) => void;
+  onStockChange: (employee: EventType, difference: number) => void;
   isUpdating: boolean;
 };
 
@@ -32,7 +32,24 @@ export default function StockCard({
   onStockChange,
   isUpdating,
 }: StockCardProps) {
-  const stock = Math.max(0, Number(employee.count) || 0);
+  const [localStock, setLocalStock] = useState(
+    Math.max(0, Number(employee.count) || 0),
+  );
+
+  useEffect(() => {
+    setLocalStock(Math.max(0, Number(employee.count) || 0));
+  }, [employee.count]);
+
+  const stock = localStock;
+
+  const handleStockChange = (difference: number) => {
+    const nextStock = Math.max(0, stock + difference);
+
+    if (nextStock === stock) return;
+
+    setLocalStock(nextStock);
+    onStockChange(employee, difference);
+  };
 
   const stockStatus =
     stock <= 0
@@ -100,9 +117,7 @@ export default function StockCard({
 
         {/* Price */}
         <div className="mt-4">
-          <p className="text-xs font-medium text-slate-400">
-            Harga produk
-          </p>
+          <p className="text-xs font-medium text-slate-400">Harga produk</p>
 
           <p className="mt-1 text-lg font-bold text-slate-900">
             {Number(employee.price || 0).toLocaleString("id-ID", {
@@ -126,9 +141,7 @@ export default function StockCard({
 
           <div className="mt-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-3xl font-bold text-slate-900">
-                {stock}
-              </p>
+              <p className="text-3xl font-bold text-slate-900">{stock}</p>
 
               <span
                 className={`mt-2 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold ${stockStatus.className}`}
@@ -141,7 +154,7 @@ export default function StockCard({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onStockChange(employee, -1)}
+                onClick={() => handleStockChange(-1)}
                 disabled={isUpdating || stock <= 0}
                 aria-label={`Kurangi stok ${employee.name}`}
                 title="Kurangi stok"
@@ -156,7 +169,7 @@ export default function StockCard({
 
               <button
                 type="button"
-                onClick={() => onStockChange(employee, 1)}
+                onClick={() => handleStockChange(1)}
                 disabled={isUpdating}
                 aria-label={`Tambah stok ${employee.name}`}
                 title="Tambah stok"

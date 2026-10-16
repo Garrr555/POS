@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/preserve-manual-memoization */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import {
   Package,
   Search,
@@ -11,6 +13,7 @@ import {
   AlertTriangle,
   Plus,
 } from "lucide-react";
+
 import { toast } from "react-toastify";
 
 import CustomFetch from "../config/db";
@@ -21,6 +24,14 @@ import EventDetail from "../components/EventDetail";
 
 import type { EventType } from "../types/type";
 import useEvents from "../hooks/useEvents";
+
+const STOCK_DEBOUNCE_MS = 500;
+
+type PendingStockChange = {
+  baseCount: number;
+  difference: number;
+  employee: EventType;
+};
 
 export default function Stock() {
   const { events, tagEvent, loading, getEvents, myEvent, saveEvents } =
@@ -42,13 +53,76 @@ export default function Stock() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Timer dan perubahan stok disimpan per produk.
+  const stockTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
+
+  const pendingStockChanges = useRef<Record<number, PendingStockChange>>({});
+
+  // Mencegah request stok bersamaan untuk produk yang sama.
+  const updatingStockIds = useRef<Set<number>>(new Set());
+
+  // Menyimpan stok terbaru, termasuk perubahan yang belum dikirim ke BE.
+  const latestStock = useRef<Record<number, number>>({});
+
   // Ambil hanya produk bertipe stock.
   useEffect(() => {
-    setEmployees(
-      (tagEvent ?? []).filter(
-        (item) => item.type?.trim().toLowerCase() === "stock",
-      ),
+    const stockProducts = (tagEvent ?? []).filter(
+      (item) => item.type?.trim().toLowerCase() === "stock",
     );
+
+    setEmployees((previous) => {
+      const updatedProducts = stockProducts.map((item) => {
+        const pending = pendingStockChanges.current[item.ID];
+
+        // Jangan menimpa stok optimistis dengan data lama dari BE.
+        if (pending) {
+          return {
+            ...item,
+            count: Math.max(0, pending.baseCount + pending.difference),
+          };
+        }
+
+        if (updatingStockIds.current.has(item.ID)) {
+          return {
+            ...item,
+            count:
+              latestStock.current[item.ID] ??
+              Math.max(0, Number(item.count) || 0),
+          };
+        }
+
+        return item;
+      });
+
+      updatedProducts.forEach((item) => {
+        if (
+          !pendingStockChanges.current[item.ID] &&
+          !updatingStockIds.current.has(item.ID)
+        ) {
+          latestStock.current[item.ID] = Math.max(0, Number(item.count) || 0);
+        }
+      });
+
+      // Mempertahankan referensi state jika data tidak berubah.
+      if (
+        previous.length === updatedProducts.length &&
+        previous.every((oldItem) => {
+          const newItem = updatedProducts.find(
+            (item) => item.ID === oldItem.ID,
+          );
+
+          return (
+            newItem &&
+            Number(newItem.count) === Number(oldItem.count) &&
+            newItem.UpdatedAt === oldItem.UpdatedAt
+          );
+        })
+      ) {
+        return previous;
+      }
+
+      return updatedProducts;
+    });
   }, [events, tagEvent, myEvent, saveEvents]);
 
   // Pencarian produk.
@@ -86,6 +160,138 @@ export default function Stock() {
     };
   }, [employees]);
 
+  // Simpan perubahan stok ke BE.
+  const saveStockChange = useCallback(
+    async (id: number) => {
+      const pending = pendingStockChanges.current[id];
+
+      if (!pending || updatingStockIds.current.has(id)) return;
+
+      // Hentikan timer dan ambil perubahan yang sudah terkumpul.
+      if (stockTimers.current[id]) {
+        clearTimeout(stockTimers.current[id]);
+        delete stockTimers.current[id];
+      }
+
+      delete pendingStockChanges.current[id];
+
+      const nextCount = Math.max(0, pending.baseCount + pending.difference);
+
+      // Tidak perlu mengirim request jika stok tidak berubah.
+      if (nextCount === pending.baseCount) return;
+
+      updatingStockIds.current.add(id);
+      setUpdatingStockId(id);
+
+      const payload = new FormData();
+      payload.append("count", String(nextCount));
+
+      try {
+        await CustomFetch.put(`/events/${id}`, payload);
+
+        latestStock.current[id] = nextCount;
+
+        setEmployees((previous) =>
+          previous.map((product) =>
+            product.ID === id ? { ...product, count: nextCount } : product,
+          ),
+        );
+
+        toast.success("Jumlah stok berhasil diperbarui");
+
+        await getEvents();
+      } catch (error: any) {
+        // Kembalikan stok ke nilai sebelum perubahan yang gagal.
+        latestStock.current[id] = pending.baseCount;
+
+        setEmployees((previous) =>
+          previous.map((product) =>
+            product.ID === id
+              ? { ...product, count: pending.baseCount }
+              : product,
+          ),
+        );
+
+        toast.error(
+          error?.response?.data?.error ||
+            error?.response?.data?.message ||
+            "Gagal memperbarui jumlah stok",
+        );
+
+        try {
+          await getEvents();
+        } catch {
+          // Stok lokal sudah dikembalikan ke nilai sebelumnya.
+        }
+      } finally {
+        updatingStockIds.current.delete(id);
+        setUpdatingStockId((current) => (current === id ? null : current));
+
+        // Jika ada perubahan baru yang menunggu, proses kembali.
+        if (pendingStockChanges.current[id]) {
+          stockTimers.current[id] = setTimeout(() => {
+            void saveStockChange(id);
+          }, STOCK_DEBOUNCE_MS);
+        }
+      }
+    },
+    [getEvents],
+  );
+
+  // Tambah atau kurangi stok dengan debounce.
+  const handleStockChange = (item: EventType, difference: number) => {
+    const id = item.ID;
+
+    // Hindari perubahan saat request produk yang sama sedang berjalan.
+    if (updatingStockIds.current.has(id)) return;
+
+    const existingPending = pendingStockChanges.current[id];
+
+    const currentCount = existingPending
+      ? Math.max(0, existingPending.baseCount + existingPending.difference)
+      : (latestStock.current[id] ?? Math.max(0, Number(item.count) || 0));
+
+    const nextCount = Math.max(0, currentCount + difference);
+
+    if (nextCount === currentCount) return;
+
+    // Simpan stok dasar sekali saja, lalu akumulasikan perubahan.
+    pendingStockChanges.current[id] = {
+      baseCount: existingPending ? existingPending.baseCount : currentCount,
+      difference: existingPending
+        ? existingPending.difference + difference
+        : difference,
+      employee: item,
+    };
+
+    latestStock.current[id] = nextCount;
+
+    // Perbarui UI tanpa menunggu BE.
+    setEmployees((previous) =>
+      previous.map((product) =>
+        product.ID === id ? { ...product, count: nextCount } : product,
+      ),
+    );
+
+    // Reset timer setiap ada klik baru pada produk yang sama.
+    if (stockTimers.current[id]) {
+      clearTimeout(stockTimers.current[id]);
+    }
+
+    stockTimers.current[id] = setTimeout(() => {
+      void saveStockChange(id);
+    }, STOCK_DEBOUNCE_MS);
+  };
+
+  // Bersihkan semua timer saat komponen dilepas.
+  useEffect(() => {
+    return () => {
+      Object.values(stockTimers.current).forEach((timer) => {
+        clearTimeout(timer);
+      });
+    };
+  }, []);
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
 
@@ -96,42 +302,6 @@ export default function Stock() {
       toast.error("Gagal memperbarui data stok");
     } finally {
       setIsRefreshing(false);
-    }
-  };
-
-  // Tambah atau kurangi stok.
-  const handleStockChange = async (item: EventType, difference: number) => {
-    if (updatingStockId !== null) return;
-
-    const currentCount = Math.max(0, Number(item.count) || 0);
-    const nextCount = Math.max(0, currentCount + difference);
-
-    if (nextCount === currentCount) return;
-
-    const payload = new FormData();
-    payload.append("count", String(nextCount));
-
-    setUpdatingStockId(item.ID);
-
-    try {
-      await CustomFetch.put(`/events/${item.ID}`, payload);
-
-      setEmployees((previous) =>
-        previous.map((product) =>
-          product.ID === item.ID ? { ...product, count: nextCount } : product,
-        ),
-      );
-
-      toast.success("Jumlah stok berhasil diperbarui");
-      await getEvents();
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Gagal memperbarui jumlah stok",
-      );
-    } finally {
-      setUpdatingStockId(null);
     }
   };
 
@@ -157,14 +327,23 @@ export default function Stock() {
   const confirmDelete = async () => {
     if (!selectedEmployee || isDeleting) return;
 
+    const id = selectedEmployee.ID;
+
+    // Batalkan perubahan stok tertunda sebelum menghapus produk.
+    if (stockTimers.current[id]) {
+      clearTimeout(stockTimers.current[id]);
+      delete stockTimers.current[id];
+    }
+
+    delete pendingStockChanges.current[id];
+    delete latestStock.current[id];
+
     setIsDeleting(true);
 
     try {
-      await CustomFetch.delete(`/events/${selectedEmployee.ID}`);
+      await CustomFetch.delete(`/events/${id}`);
 
-      setEmployees((previous) =>
-        previous.filter((item) => item.ID !== selectedEmployee.ID),
-      );
+      setEmployees((previous) => previous.filter((item) => item.ID !== id));
 
       toast.success("Produk berhasil dihapus");
 
@@ -234,7 +413,6 @@ export default function Stock() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
-
         {/* Summary */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {summaryCards.map((card) => (
@@ -270,7 +448,6 @@ export default function Stock() {
         {/* Search */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
             <div className="relative w-full sm:max-w-sm">
               <Search
                 size={18}
@@ -413,6 +590,7 @@ export default function Stock() {
                 <h2 className="text-lg font-bold text-slate-900">
                   Detail Menu
                 </h2>
+
                 <p className="mt-1 text-sm text-slate-500">
                   Informasi lengkap produk.
                 </p>
