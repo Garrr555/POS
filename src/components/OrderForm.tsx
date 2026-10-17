@@ -155,13 +155,13 @@ const OrderForm = ({
                 return (
                   <div
                     key={product.ID}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 overflow-hidden"
                   >
                     <div className="flex gap-3">
                       <img
                         src={product.image}
                         width={100}
-                        className="bg-cover rounded-lg"
+                        className="bg-cover"
                       />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-slate-800">
@@ -178,7 +178,7 @@ const OrderForm = ({
                       </div>
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-2 p-3">
                       {quantity > 0 && (
                         <>
                           <button

@@ -2,7 +2,12 @@ import { useMemo, useState } from "react";
 
 import useOrders from "../hooks/useOrders";
 
-import { formatRupiah, isCompleted } from "../utils/orderHelpers";
+import {
+  formatRupiah,
+  getTotalItemsCompleted,
+  getTotalOrdersCompleted,
+  totalRevenueHarga,
+} from "../utils/orderHelpers";
 
 import type { OrderType } from "../types/type";
 import useOrderActions from "../utils/useDecoration";
@@ -76,38 +81,15 @@ const Orders = () => {
     );
   }, [orders, search]);
 
-  const totalRevenueHarga = useMemo(
-    () =>
-      orders.reduce(
-        (total, order) =>
-          isCompleted(order.status) ? total + Number(order.total || 0) : total,
-        0,
-      ),
-    [orders],
-  );
+  const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
 
   const totalItemsCompleted = useMemo(
-    () =>
-      orders.reduce(
-        (total, order) =>
-          isCompleted(order.status)
-            ? total +
-              (order.items || []).reduce(
-                (itemTotal, item) => itemTotal + Number(item.quantity || 0),
-                0,
-              )
-            : total,
-        0,
-      ),
+    () => getTotalItemsCompleted(orders),
     [orders],
   );
 
   const totalOrdersCompleted = useMemo(
-    () =>
-      orders.reduce(
-        (total, order) => (isCompleted(order.status) ? total + 1 : total),
-        0,
-      ),
+    () => getTotalOrdersCompleted(orders),
     [orders],
   );
 
@@ -156,8 +138,8 @@ const Orders = () => {
             hint: "Akumulasi quantity item",
           },
           {
-            label: "Total Pendapatan",
-            value: formatRupiah(totalRevenueHarga),
+            label: "Pendapatan Kotor",
+            value: formatRupiah(revenue),
             hint: "Dari order completed",
           },
         ]}

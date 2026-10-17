@@ -7,9 +7,6 @@ import {
   Trash2,
   X,
   UtensilsCrossed,
-  Package,
-  Coffee,
-  Soup,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../components/Loading";
@@ -62,18 +59,6 @@ const Menus = () => {
     return employees.filter((item) => item.type?.trim() === selectedCategory);
   }, [employees, selectedCategory]);
 
-  // Statistik berdasarkan data menu yang tersedia.
-  const menuStats = useMemo(() => {
-    const food = employees.filter(
-      (item) => item.type?.trim().toLowerCase() === "food",
-    ).length;
-    const drink = employees.filter(
-      (item) => item.type?.trim().toLowerCase() === "drink",
-    ).length;
-
-    return { food, drink, total: food + drink };
-  }, [employees]);
-
   const closeFormModal = () => {
     setShowCreateModal(false);
     setSelectedEmployee(null);
@@ -120,61 +105,6 @@ const Menus = () => {
 
   return (
     <div className="min-h-screen animate-fade-in space-y-6 pb-8">
-      {/* Dashboard Statistics */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {/* Total Menu */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-500">Total Menu</p>
-              <h3 className="mt-3 text-3xl font-bold text-slate-900">
-                {menuStats.total}
-              </h3>
-              <p className="mt-2 text-xs text-slate-400">
-                Semua produk terdaftar
-              </p>
-            </div>
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
-              <Package size={23} />
-            </div>
-          </div>
-        </div>
-
-        {/* Food */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-500">Food</p>
-              <h3 className="mt-3 text-3xl font-bold text-slate-900">
-                {menuStats.food}
-              </h3>
-              <p className="mt-2 text-xs text-slate-400">Produk makanan</p>
-            </div>
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-              <Soup size={23} />
-            </div>
-          </div>
-        </div>
-
-        {/* Drink */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-500">Drink</p>
-              <h3 className="mt-3 text-3xl font-bold text-slate-900">
-                {menuStats.drink}
-              </h3>
-              <p className="mt-2 text-xs text-slate-400">Produk minuman</p>
-            </div>
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <Coffee size={23} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Search and Categories */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">

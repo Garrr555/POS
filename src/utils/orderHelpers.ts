@@ -2,6 +2,8 @@
    Konstanta
 ========================================================= */
 
+import type { OrderType } from "../types/type";
+
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   cash: "Cash / Tunai",
   qris: "QRIS",
@@ -74,3 +76,32 @@ export const getStatusClass = (status: string) =>
 
 export const isCompleted = (status: string) =>
   status?.toLowerCase() === "completed";
+
+export const totalRevenueHarga = (orders: OrderType[]): number => {
+  return orders.reduce(
+    (total, order) =>
+      isCompleted(order.status) ? total + Number(order.total || 0) : total,
+    0,
+  );
+};
+
+export const getTotalItemsCompleted = (orders: OrderType[]): number => {
+  return orders.reduce(
+    (total, order) =>
+      isCompleted(order.status)
+        ? total +
+          (order.items || []).reduce(
+            (itemTotal, item) => itemTotal + Number(item.quantity || 0),
+            0,
+          )
+        : total,
+    0,
+  );
+};
+
+export const getTotalOrdersCompleted = (orders: OrderType[]): number => {
+  return orders.reduce(
+    (total, order) => (isCompleted(order.status) ? total + 1 : total),
+    0,
+  );
+};

@@ -273,7 +273,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
           </div>
 
           <div>
-            <label className="block mb-2">Count</label>
+            <label className="block mb-2">Stock</label>
             <input
               className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
               type="number"

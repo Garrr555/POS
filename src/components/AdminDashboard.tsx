@@ -7,10 +7,20 @@ import {
   Package,
   TrendingUp,
   Warehouse,
+  ListOrdered,
+  SquareMenu,
+  BanknoteArrowDown,
+  BanknoteCheck,
 } from "lucide-react";
 import type { EventType } from "../types/type";
 import { useEffect, useMemo, useState } from "react";
 import useEvents from "../hooks/useEvents";
+import {
+  getTotalItemsCompleted,
+  getTotalOrdersCompleted,
+  totalRevenueHarga,
+} from "../utils/orderHelpers";
+import useOrders from "../hooks/useOrders";
 
 const formatRupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -28,67 +38,109 @@ const AdminDashboard = () => {
   );
 
   const [employees, setEmployees] = useState<EventType[]>([]);
+  const { orders } = useOrders();
 
   useEffect(() => {
     setEmployees(tagEvent ?? []);
   }, [events, tagEvent, myEvent, saveEvents]);
 
-const stats = useMemo(() => {
-  const foodMenus = employees.filter(
-    (item) => item.type?.trim().toLowerCase() === "food",
+  const stats = useMemo(() => {
+    const foodMenus = employees.filter(
+      (item) => item.type?.trim().toLowerCase() === "food",
+    );
+
+    const drinkMenus = employees.filter(
+      (item) => item.type?.trim().toLowerCase() === "drink",
+    );
+
+    const stockMenus = employees.filter(
+      (item) => item.type?.trim().toLowerCase() === "stock",
+    );
+
+    // Total seluruh produk selain stock
+    const totalMenus = employees.filter(
+      (item) => item.type?.trim().toLowerCase() !== "stock",
+    ).length;
+
+    // Total harga seluruh menu selain stock
+    const totalMenuValue = employees
+      .filter((item) => item.type?.trim().toLowerCase() !== "stock")
+      .reduce((total, item) => total + (Number(item.price) || 0), 0);
+
+    // Menu terakhir: semua produk selain stock.
+    const latestMenus = employees
+      .filter((item) => item.type?.trim().toLowerCase() !== "stock")
+      .sort(
+        (a, b) =>
+          new Date(b.CreatedAt ?? 0).getTime() -
+          new Date(a.CreatedAt ?? 0).getTime(),
+      )
+      .slice(0, 5);
+
+    // Stok terakhir: hanya produk bertipe stock.
+    const latestStock = employees
+      .filter((item) => item.type?.trim().toLowerCase() === "stock")
+      .sort(
+        (a, b) =>
+          new Date(b.CreatedAt ?? 0).getTime() -
+          new Date(a.CreatedAt ?? 0).getTime(),
+      )
+      .slice(0, 5);
+
+    return {
+      foodMenus,
+      drinkMenus,
+      stockMenus,
+      totalMenus,
+      totalMenuValue,
+      latestMenus,
+      latestStock,
+    };
+  }, [employees]);
+
+  const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
+
+  const totalItemsCompleted = useMemo(
+    () => getTotalItemsCompleted(orders),
+    [orders],
   );
 
-  const drinkMenus = employees.filter(
-    (item) => item.type?.trim().toLowerCase() === "drink",
+  const totalOrdersCompleted = useMemo(
+    () => getTotalOrdersCompleted(orders),
+    [orders],
   );
-
-  const stockMenus = employees.filter(
-    (item) => item.type?.trim().toLowerCase() === "stock",
-  );
-
-  const totalValue = employees.reduce(
-    (total, item) => total + (Number(item.price) || 0),
-    0,
-  );
-
-  const totalMenuValue = employees
-    .filter((item) => item.type?.trim().toLowerCase() !== "stock")
-    .reduce((total, item) => total + (Number(item.price) || 0), 0);
-
-  // Menu terakhir: semua produk selain stock.
-  const latestMenus = employees
-    .filter((item) => item.type?.trim().toLowerCase() !== "stock")
-    .sort(
-      (a, b) =>
-        new Date(b.CreatedAt ?? 0).getTime() -
-        new Date(a.CreatedAt ?? 0).getTime(),
-    )
-    .slice(0, 5);
-
-  // Stok terakhir: hanya produk bertipe stock.
-  const latestStock = employees
-    .filter((item) => item.type?.trim().toLowerCase() === "stock")
-    .sort(
-      (a, b) =>
-        new Date(b.CreatedAt ?? 0).getTime() -
-        new Date(a.CreatedAt ?? 0).getTime(),
-    )
-    .slice(0, 5);
-
-  return {
-    foodMenus,
-    drinkMenus,
-    stockMenus,
-    totalValue,
-    totalMenuValue,
-    latestMenus,
-    latestStock,
-  };
-}, [employees]);
 
   const totalMenu = stats.foodMenus.length + stats.drinkMenus.length;
 
   const summaryCards = [
+    {
+      title: "Total Order",
+      value: totalOrdersCompleted,
+      description: "Menu minuman",
+      icon: ListOrdered,
+      iconClass: "bg-purple-50 text-purple-600",
+    },
+    {
+      title: "Total Item Terjual",
+      value: totalItemsCompleted,
+      description: "Menu stok",
+      icon: SquareMenu,
+      iconClass: "bg-yellow-50 text-yellow-600",
+    },
+    {
+      title: "Pendapatan Kotor",
+      value: formatRupiah(revenue),
+      description: "Menu minuman",
+      icon: BanknoteArrowDown,
+      iconClass: "bg-blue-50 text-blue-600",
+    },
+    {
+      title: "Pendapatan Bersih",
+      value: formatRupiah(revenue),
+      description: "Menu stok",
+      icon: BanknoteCheck,
+      iconClass: "bg-green-50 text-green-600",
+    },
     {
       title: "Total Menu",
       value: totalMenu,
@@ -277,7 +329,9 @@ const stats = useMemo(() => {
               <p className="text-sm text-slate-500">Rata-rata harga menu</p>
               <p className="mt-1 text-xl font-bold text-slate-900">
                 {formatRupiah(
-                  employees.length ? stats.totalValue / employees.length : 0,
+                  stats.totalMenus
+                    ? stats.totalMenuValue / stats.totalMenus
+                    : 0,
                 )}
               </p>
             </div>

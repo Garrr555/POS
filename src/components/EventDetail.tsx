@@ -77,7 +77,7 @@ const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
       value: formatPrice(Number(initialData.price)),
     },
     {
-      label: "Count",
+      label: "Stock",
       value: initialData.count ?? 0,
     },
     {

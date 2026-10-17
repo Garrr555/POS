@@ -16,7 +16,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        
+
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route
@@ -38,7 +38,6 @@ function App() {
             <Route path="/employees" element={<Employees />} />
             <Route path="/menus" element={<Menus />} />
             <Route path="/orders" element={<Orders />} />
-            <Route path="/table" element={<Dashboard />} />
             <Route path="/stock" element={<Stock />} />
           </Route>
           <Route path="*" element={<Navigate to={"/dashboard"} replace />} />
