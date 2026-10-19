@@ -105,3 +105,23 @@ export const getTotalOrdersCompleted = (orders: OrderType[]): number => {
     0,
   );
 };
+
+export const getTotalOrders = (orders: OrderType[]): number => {
+  return orders.length;
+};
+
+export const getTotalItems = (orders: OrderType[]): number => {
+  return orders.reduce(
+    (total, order) =>
+      total +
+      (order.items || []).reduce(
+        (itemTotal, item) => itemTotal + Number(item.quantity || 0),
+        0,
+      ),
+    0,
+  );
+};
+
+export const getTotalRevenue = (orders: OrderType[]): number => {
+  return orders.reduce((total, order) => total + Number(order.total || 0), 0);
+};

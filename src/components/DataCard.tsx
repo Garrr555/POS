@@ -43,7 +43,7 @@ const DataCard = ({ employee, onEdit, onDelete, onDetail }: DataCardProps) => {
         )}
 
         <span className="absolute left-3 top-3 max-w-[80%] truncate rounded-lg border border-white/70 bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
-          {employee.type || "Tanpa kategori"}
+          {employee.name || "Menu tanpa nama"}
         </span>
 
         <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-slate-950/70 px-3 py-2 text-xs font-medium text-white sm:opacity-0 sm:transition sm:group-hover:opacity-100">
@@ -53,54 +53,30 @@ const DataCard = ({ employee, onEdit, onDelete, onDetail }: DataCardProps) => {
       </button>
 
       {/* Product Information */}
-      <div className="p-4">
-        <div className="min-h-[76px]">
-          <h3 className="line-clamp-2 text-base font-bold leading-6 text-slate-900">
-            {employee.name || "Menu tanpa nama"}
-          </h3>
-
-          <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-500">
-            {employee.description || "Belum ada deskripsi menu."}
-          </p>
-        </div>
-
-        <div className="mt-4 flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
-          <div className="min-w-0">
-            <p className="text-xs font-medium text-slate-400">Harga jual</p>
-
+      <div className="p-4 flex justify-between items-center">
+          <div className="">
             <p className="mt-1 truncate text-lg font-bold text-orange-600">
               {format}
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => onDetail(employee)}
-            className="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
-          >
-            Detail
-          </button>
-        </div>
-
         {/* Admin Actions */}
         {isAdmin && (
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => onEdit(employee)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+              className="flex items-center justify-center gap-2 rounded-full border border-slate-200 px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
             >
               <Pencil size={15} />
-              Edit
             </button>
 
             <button
               type="button"
               onClick={() => onDelete(employee)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-red-100 px-3 py-2.5 text-sm font-semibold text-red-500 transition hover:border-red-200 hover:bg-red-50"
+              className="flex items-center justify-center gap-2 rounded-full border border-red-100 px-3 py-2.5 text-sm font-semibold text-red-500 transition hover:border-red-200 hover:bg-red-50"
             >
               <Trash2 size={15} />
-              Hapus
             </button>
           </div>
         )}

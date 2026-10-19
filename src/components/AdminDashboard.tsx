@@ -11,6 +11,10 @@ import {
   SquareMenu,
   BanknoteArrowDown,
   BanknoteCheck,
+  TriangleAlert,
+  CircleAlert,
+  Blocks,
+  Box,
 } from "lucide-react";
 import type { EventType } from "../types/type";
 import { useEffect, useMemo, useState } from "react";
@@ -21,6 +25,7 @@ import {
   totalRevenueHarga,
 } from "../utils/orderHelpers";
 import useOrders from "../hooks/useOrders";
+import useStockStats from "../hooks/useStockStats";
 
 const formatRupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -39,6 +44,7 @@ const AdminDashboard = () => {
 
   const [employees, setEmployees] = useState<EventType[]>([]);
   const { orders } = useOrders();
+  const statsStock = useStockStats();
 
   useEffect(() => {
     setEmployees(tagEvent ?? []);
@@ -116,58 +122,74 @@ const AdminDashboard = () => {
     {
       title: "Total Order",
       value: totalOrdersCompleted,
-      description: "Menu minuman",
       icon: ListOrdered,
       iconClass: "bg-purple-50 text-purple-600",
     },
     {
       title: "Total Item Terjual",
       value: totalItemsCompleted,
-      description: "Menu stok",
       icon: SquareMenu,
       iconClass: "bg-yellow-50 text-yellow-600",
     },
     {
       title: "Pendapatan Kotor",
       value: formatRupiah(revenue),
-      description: "Menu minuman",
       icon: BanknoteArrowDown,
       iconClass: "bg-blue-50 text-blue-600",
     },
     {
       title: "Pendapatan Bersih",
       value: formatRupiah(revenue),
-      description: "Menu stok",
       icon: BanknoteCheck,
       iconClass: "bg-green-50 text-green-600",
     },
     {
       title: "Total Menu",
       value: totalMenu,
-      description: "Semua menu terdaftar",
       icon: UtensilsCrossed,
       iconClass: "bg-orange-50 text-orange-600",
     },
     {
       title: "Menu Food",
       value: stats.foodMenus.length,
-      description: "Menu makanan",
       icon: Salad,
       iconClass: "bg-amber-50 text-amber-600",
     },
     {
       title: "Menu Drink",
       value: stats.drinkMenus.length,
-      description: "Menu minuman",
       icon: Coffee,
       iconClass: "bg-orange-50 text-orange-600",
     },
     {
       title: "Menu Stock",
       value: stats.stockMenus.length,
-      description: "Menu stok",
-      icon: Package,
+      icon: Box,
       iconClass: "bg-slate-50 text-slate-600",
+    },
+    {
+      title: "Produk Stock",
+      value: statsStock.totalProducts,
+      icon: Package,
+      iconClass: "bg-orange-50 text-orange-600",
+    },
+    {
+      title: "Unit Stock",
+      value: statsStock.totalUnits,
+      icon: Blocks,
+      iconClass: "bg-blue-50 text-blue-600",
+    },
+    {
+      title: "Stok Menipis",
+      value: statsStock.lowStock,
+      icon: CircleAlert,
+      iconClass: "bg-yellow-50 text-yellow-600",
+    },
+    {
+      title: "Stok Habis",
+      value: statsStock.outOfStock,
+      icon: TriangleAlert,
+      iconClass: "bg-red-50 text-red-600",
     },
   ];
 
@@ -201,9 +223,6 @@ const AdminDashboard = () => {
                 <p className="text-sm text-slate-500">{card.title}</p>
                 <p className="mt-1 break-words text-2xl font-bold text-slate-900">
                   {card.value}
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  {card.description}
                 </p>
               </div>
             </div>

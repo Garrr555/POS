@@ -1,7 +1,7 @@
 export type Stat = {
   label: string;
   value: string | number;
-  hint: string;
+  hint?: string;
 };
 
 /** Ringkasan statistik dalam satu kartu, dipisah garis tipis. */

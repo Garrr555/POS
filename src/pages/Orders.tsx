@@ -4,8 +4,11 @@ import useOrders from "../hooks/useOrders";
 
 import {
   formatRupiah,
+  getTotalItems,
   getTotalItemsCompleted,
+  getTotalOrders,
   getTotalOrdersCompleted,
+  getTotalRevenue,
   totalRevenueHarga,
 } from "../utils/orderHelpers";
 
@@ -34,21 +37,17 @@ const getSearchableText = (order: OrderType): string[] =>
   ].map((value) => value?.toLowerCase() || "");
 
 const Orders = () => {
-  const currentDate = new Date();
-
   const [search, setSearch] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(
-    String(currentDate.getMonth() + 1),
-  );
-  const [selectedYear, setSelectedYear] = useState(
-    String(currentDate.getFullYear()),
-  );
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   const { orders, loading, error, getOrders } = useOrders(
     "",
     selectedMonth,
     selectedYear,
   );
+
+  const { orders: allOrders } = useOrders("", "", "");
 
   const {
     selectedOrder,
@@ -93,11 +92,17 @@ const Orders = () => {
     [orders],
   );
 
+  const totalAllOrders = useMemo(() => getTotalOrders(allOrders), [allOrders]);
+
+  const totalAllItems = useMemo(() => getTotalItems(orders), [orders]);
+
+  const totalAllRevenue = useMemo(() => getTotalRevenue(orders), [orders]);
+
   const resetSearch = () => setSearch("");
 
   const resetMonth = () => {
-    setSelectedMonth(String(currentDate.getMonth() + 1));
-    setSelectedYear(String(currentDate.getFullYear()));
+    setSelectedMonth("");
+    setSelectedYear("");
   };
 
   const renderOrderList = () => {
@@ -128,19 +133,34 @@ const Orders = () => {
       <StatsBar
         stats={[
           {
-            label: "Total Order",
-            value: totalOrdersCompleted,
-            hint: "Transaksi pada periode terpilih",
+            label:
+              selectedMonth || selectedYear
+                ? "Total Order Bulan ini"
+                : "Total Order",
+            value:
+              selectedMonth || selectedYear
+                ? totalOrdersCompleted
+                : totalAllOrders,
           },
           {
-            label: "Total Item Terjual",
-            value: totalItemsCompleted,
-            hint: "Akumulasi quantity item",
+            label:
+              selectedMonth || selectedYear
+                ? "Total Item Terjual Bulan ini"
+                : "Total Item Terjual",
+            value:
+              selectedMonth || selectedYear
+                ? totalItemsCompleted
+                : totalAllItems,
           },
           {
-            label: "Pendapatan Kotor",
-            value: formatRupiah(revenue),
-            hint: "Dari order completed",
+            label:
+              selectedMonth || selectedYear
+                ? "Pendapatan Kotor Bulan ini"
+                : "Pendapatan Kotor",
+            value:
+              selectedMonth || selectedYear
+                ? formatRupiah(revenue)
+                : formatRupiah(totalAllRevenue),
           },
         ]}
       />
@@ -148,27 +168,15 @@ const Orders = () => {
       {/* Order list */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         <div className="border-b border-slate-100 p-4 sm:p-5">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <h2 className="font-semibold text-slate-900">
-                Riwayat Transaksi
-              </h2>
-
-              <p className="text-sm text-slate-500">
-                {filteredOrders.length} order ditampilkan
-              </p>
-            </div>
-
-            <OrderFilters
-              search={search}
-              month={selectedMonth}
-              year={selectedYear}
-              onSearchChange={setSearch}
-              onMonthChange={setSelectedMonth}
-              onYearChange={setSelectedYear}
-              onResetMonth={resetMonth}
-            />
-          </div>
+          <OrderFilters
+            search={search}
+            month={selectedMonth}
+            year={selectedYear}
+            onSearchChange={setSearch}
+            onMonthChange={setSelectedMonth}
+            onYearChange={setSelectedYear}
+            onResetMonth={resetMonth}
+          />
         </div>
 
         {renderOrderList()}

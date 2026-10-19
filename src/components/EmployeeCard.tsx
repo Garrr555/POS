@@ -18,14 +18,14 @@ const EmployeeCard = ({ employee, onEdit, onDelete }: EmployeeCardProps) => {
   return (
     <div className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       {/* Top Section */}
-      <div className="relative h-70 bg-linear-to-br from-slate-50 via-slate-50 to-indigo-50/40 flex items-center justify-center">
+      <div className="relative h-70 bg-linear-to-br from-slate-50 via-slate-50 to-orange-50/40 flex items-center justify-center">
         {/* Department */}
         <div className="absolute top-4 left-4 z-10 rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 shadow-sm">
-          {employee.divisi?.divisi ||  "Employee"}
+          {employee.department || "Employee"}
         </div>
 
         {/* Avatar */}
-        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-indigo-100 text-4xl font-medium text-indigo-500 ring-8 ring-white/50 shadow-sm">
+        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-orange-100 text-4xl font-medium text-orange-500 ring-8 ring-white/50 shadow-sm">
           {employee.image ? (
             <img
               src={employee.image}
@@ -44,9 +44,7 @@ const EmployeeCard = ({ employee, onEdit, onDelete }: EmployeeCardProps) => {
           {employee.name}
         </h3>
 
-        <p className="mt-1 text-sm text-slate-500">
-          {employee.department}
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{employee.divisi?.divisi}</p>
       </div>
 
       {/* Overlay */}
@@ -55,8 +53,8 @@ const EmployeeCard = ({ employee, onEdit, onDelete }: EmployeeCardProps) => {
           absolute inset-0 z-20
           flex items-center justify-center
           bg-linear-to-br
-          from-indigo-600/85
-          via-indigo-500/75
+          from-orange-600/85
+          via-orange-500/75
           to-slate-900/85
           opacity-0
           transition-all duration-300
@@ -82,7 +80,7 @@ const EmployeeCard = ({ employee, onEdit, onDelete }: EmployeeCardProps) => {
               bg-white
               px-4 py-2.5
               text-sm font-semibold
-              text-indigo-600
+              text-orange-600
               shadow-lg
               transition-all duration-200
               hover:scale-105

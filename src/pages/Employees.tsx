@@ -65,33 +65,12 @@ const Employees = () => {
 
   return (
     <div className="animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold">Employees</h1>
-          <p className="text-sm text-slate-500/80">Manage your Team Members</p>
-        </div>
-
-        <div className="flex items-center justify-end gap-2 w-full">
-          <button
-            onClick={() => {
-              setSelectedEmployee(null);
-              setShowCreateModal(true);
-            }}
-            type="button"
-            className=" py-3 px-4 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-lg text-sm font-semibold hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
-          >
-            <Plus size={16} />
-            Add User
-          </button>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 animate-fade-in">
-        {/* Search Input */}
-        <div
-          className="
+      <div className="flex items-center justify-between gap-2 w-full mb-6">
+        {/* Search Bar */}
+        <div className="flex flex-col w-7/8 sm:flex-row gap-3 animate-fade-in">
+          {/* Search Input */}
+          <div
+            className="
             group relative flex-1
             border border-slate-200
             rounded-lg
@@ -100,27 +79,27 @@ const Employees = () => {
             transition-all duration-300 ease-out
             hover:border-slate-300
             hover:shadow-md
-            focus-within:border-indigo-500
+            focus-within:border-orange-500
             focus-within:ring-2
-            focus-within:ring-indigo-500/10
+            focus-within:ring-orange-500/10
             focus-within:shadow-md
           "
-        >
-          <Search
-            className="
+          >
+            <Search
+              className="
               absolute left-3 top-1/2 -translate-y-1/2
               w-4 h-4
               text-slate-400
               transition-all duration-300
-              group-focus-within:text-indigo-500
+              group-focus-within:text-orange-500
               group-focus-within:scale-110
             "
-          />
+            />
 
-          <input
-            type="text"
-            placeholder="Search Employees..."
-            className="
+            <input
+              type="text"
+              placeholder="Search Employees..."
+              className="
               w-full
               h-10
               pl-10 pr-4
@@ -129,8 +108,22 @@ const Employees = () => {
               text-sm text-slate-700
               placeholder:text-slate-400
             "
-          />
+            />
+          </div>
         </div>
+
+        {/* Header */}
+        <button
+          onClick={() => {
+            setSelectedEmployee(null);
+            setShowCreateModal(true);
+          }}
+          type="button"
+          className="w-1/8 py-3 px-4 bg-linear-to-r from-orange-600 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
+        >
+          <Plus size={16} />
+          Add User
+        </button>
       </div>
 
       {/* Employee Card */}
@@ -241,8 +234,8 @@ const Employees = () => {
           flex items-center justify-center
           h-32
           bg-linear-to-br
-          from-indigo-600
-          via-indigo-500
+          from-orange-600
+          via-orange-500
           to-slate-900
         "
             >
@@ -326,9 +319,9 @@ const Employees = () => {
               items-center justify-center
               overflow-hidden
               rounded-full
-              bg-indigo-100
+              bg-orange-100
               text-sm font-semibold
-              text-indigo-500
+              text-orange-500
             "
                 >
                   {selectedEmployee.image ? (

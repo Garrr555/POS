@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/preserve-manual-memoization */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
@@ -135,30 +136,6 @@ export default function Stock() {
         (item.description ?? "").toLowerCase().includes(keyword),
     );
   }, [employees, search]);
-
-  // Ringkasan stok.
-  const stats = useMemo(() => {
-    const totalUnits = employees.reduce(
-      (total, item) => total + Math.max(0, Number(item.count) || 0),
-      0,
-    );
-
-    const lowStock = employees.filter((item) => {
-      const count = Number(item.count) || 0;
-      return count > 0 && count <= 5;
-    }).length;
-
-    const outOfStock = employees.filter(
-      (item) => (Number(item.count) || 0) <= 0,
-    ).length;
-
-    return {
-      totalProducts: employees.length,
-      totalUnits,
-      lowStock,
-      outOfStock,
-    };
-  }, [employees]);
 
   // Simpan perubahan stok ke BE.
   const saveStockChange = useCallback(
@@ -379,72 +356,14 @@ export default function Stock() {
     setSelectedEmployee(null);
   };
 
-  const summaryCards = [
-    {
-      label: "Total Produk",
-      value: stats.totalProducts,
-      description: "Jenis produk stok",
-      iconClass: "bg-orange-50 text-orange-600",
-    },
-    {
-      label: "Total Unit Stok",
-      value: stats.totalUnits,
-      description: "Jumlah seluruh unit",
-      iconClass: "bg-blue-50 text-blue-600",
-    },
-    {
-      label: "Stok Menipis",
-      value: stats.lowStock,
-      description: "Stok 1–5 unit",
-      iconClass: "bg-amber-50 text-amber-600",
-    },
-    {
-      label: "Stok Habis",
-      value: stats.outOfStock,
-      description: "Stok 0 unit",
-      iconClass: "bg-red-50 text-red-600",
-    },
-  ];
-
   if (loading && employees.length === 0) {
     return <Loading />;
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-7xl space-y-6">
-        {/* Summary */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {summaryCards.map((card) => (
-            <div
-              key={card.label}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium text-slate-500">
-                    {card.label}
-                  </p>
-
-                  <p className="mt-2 text-3xl font-bold text-slate-900">
-                    {card.value}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-400">
-                    {card.description}
-                  </p>
-                </div>
-
-                <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl ${card.iconClass}`}
-                >
-                  <Package size={21} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
+        
         {/* Search */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

@@ -1,9 +1,9 @@
-import { Search } from "lucide-react";
+import { RotateCcw, Search} from "lucide-react";
 
 import { MONTH_OPTIONS } from "../../utils/orderHelpers";
 
 const CONTROL_CLASS =
-  "h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10";
+  "h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10";
 
 const YEAR_RANGE = 7;
 
@@ -33,57 +33,90 @@ const OrderFilters = ({
     (_, index) => currentYear - index,
   );
 
+  const hasDateFilter = Boolean(month || year);
+
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div className="flex justify-between items-center w-full flex-col gap-3 lg:w-auto lg:flex-row lg:items-center rounded-xl">
       {/* Search */}
-      <div className="relative w-full sm:w-64">
+      <div className="group relative w-full lg:w-72">
         <Search
-          size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          size={18}
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-orange-500"
         />
 
         <input
           type="text"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Cari transaksi..."
-          className={`${CONTROL_CLASS} w-full pl-9 placeholder:text-slate-400`}
+          placeholder="Cari nomor, pelanggan, kasir..."
+          className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
         />
       </div>
 
-      {/* Month & Year */}
+      {/* Date Filters */}
       <div className="flex items-center gap-2">
-        <select
-          value={month}
-          onChange={(e) => onMonthChange(e.target.value)}
-          className={CONTROL_CLASS}
-        >
-          {MONTH_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {/* Month */}
+        <div className="relative min-w-0 flex-1 sm:w-32 sm:flex-none">
+          <select
+            value={month}
+            onChange={(e) => onMonthChange(e.target.value)}
+            aria-label="Filter bulan"
+            className={CONTROL_CLASS}
+          >
+            <option value="">Bulan</option>
 
-        <select
-          value={year}
-          onChange={(e) => onYearChange(e.target.value)}
-          className={CONTROL_CLASS}
-        >
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
+            {MONTH_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
 
+          <span className="pointer-events-none absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-slate-300" />
+          {month && (
+            <span className="pointer-events-none absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-orange-500" />
+          )}
+        </div>
+
+        {/* Year */}
+        <div className="relative min-w-0 flex-1 sm:w-28 sm:flex-none">
+          <select
+            value={year}
+            onChange={(e) => onYearChange(e.target.value)}
+            aria-label="Filter tahun"
+            className={CONTROL_CLASS}
+          >
+            <option value="">Tahun</option>
+
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+
+          <span
+            className={`pointer-events-none absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full ${
+              year ? "bg-orange-500" : "bg-slate-300"
+            }`}
+          />
+        </div>
+
+        {/* Reset */}
         <button
           type="button"
           onClick={onResetMonth}
-          title="Kembali ke bulan ini"
-          className="h-10 whitespace-nowrap rounded-lg px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          disabled={!hasDateFilter}
+          title="Reset filter tanggal"
+          aria-label="Reset filter tanggal"
+          className={`flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 text-sm font-medium transition sm:px-3 ${
+            hasDateFilter
+              ? "bg-orange-500 text-white shadow-sm hover:bg-orange-600 active:scale-95"
+              : "cursor-not-allowed text-slate-400"
+          }`}
         >
-          Bulan ini
+          <RotateCcw size={14} />
+          <span className="hidden sm:inline">Reset</span>
         </button>
       </div>
     </div>

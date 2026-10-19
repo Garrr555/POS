@@ -195,7 +195,6 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              required
             />
           </div>
 
@@ -208,7 +207,6 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              required
             />
           </div>
 
@@ -221,7 +219,6 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
               }
-              required
             />
           </div>
 
@@ -229,7 +226,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
             <label className="block mb-2">Time</label>
             <input
               type="datetime-local"
-              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10"
+              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
               value={formData.datetime}
               onChange={(e) =>
                 setFormData({
@@ -237,19 +234,17 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
                   datetime: e.target.value,
                 })
               }
-              required
             />
           </div>
 
           <div>
             <label className="block mb-2">Type</label>
             <select
-              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10"
+              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
               value={formData.type}
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
               }
-              required
             >
               <option value="" disabled>
                 Select Type
@@ -420,9 +415,9 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
 
         <div className="space-y-4">
           {attachmentFile ? (
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-orange-100 bg-orange-50/50 p-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-indigo-100 text-indigo-600 shrink-0">
+                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-orange-100 text-orange-600 shrink-0">
                   <FileText size={22} />
                 </div>
 
@@ -448,7 +443,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
           ) : initialData?.file ? (
             <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-indigo-100 text-indigo-600 shrink-0">
+                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-orange-100 text-orange-600 shrink-0">
                   <FileText size={22} />
                 </div>
 
@@ -460,7 +455,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
                     href={initialData.file}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-600 hover:underline"
+                    className="text-xs text-orange-600 hover:underline"
                   >
                     View existing file
                   </a>
@@ -514,7 +509,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg w-full sm:w-auto px-6 py-3 bg-linear-to-r from-indigo-600 to-indigo-500 text-white text-sm font-semibold hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
+          className="rounded-lg w-full sm:w-auto px-6 py-3 bg-linear-to-r from-orange-600 to-orange-500 text-white text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
         >
           {loading && <Loader className="w-4 h-4 animate-spin" />}
 

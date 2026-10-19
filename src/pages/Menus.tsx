@@ -2,11 +2,12 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import {
-  Plus,
   Search,
   Trash2,
   X,
   UtensilsCrossed,
+  ShoppingCart,
+  SquareMenu,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../components/Loading";
@@ -105,7 +106,6 @@ const Menus = () => {
 
   return (
     <div className="min-h-screen animate-fade-in space-y-6 pb-8">
-
       {/* Search and Categories */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="w-full">
@@ -135,7 +135,24 @@ const Menus = () => {
                 </button>
               )}
             </div>
-
+            <h1 className="text-5xl font-light text-orange-100"> | </h1>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  type="button"
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${category === "Stock" && "hidden"} ${
+                    selectedCategory === category
+                      ? "bg-orange-500 text-white shadow-sm"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+            <h1 className="text-5xl font-light text-orange-100"> | </h1>
             <div className="flex items-center justify-center gap-2">
               <button
                 type="button"
@@ -148,8 +165,7 @@ const Menus = () => {
                 title="Tambah menu"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 px-5 py-3 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98]"
               >
-                <Plus size={18} />
-                Add Menu
+                <SquareMenu size={18} />
               </button>
 
               <button
@@ -159,46 +175,15 @@ const Menus = () => {
                 title="Tambah Order"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]"
               >
-                <Plus size={18} />
-                Add Order
+                <ShoppingCart size={18} />
               </button>
             </div>
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Kategori
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                type="button"
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${category === "Stock" && "hidden"} ${
-                  selectedCategory === category
-                    ? "bg-orange-500 text-white shadow-sm"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Product Catalog */}
       <section>
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-900">Katalog Menu</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Daftar produk makanan dan minuman.
-          </p>
-        </div>
-
         {loading ? (
           <Loading />
         ) : filteredMenus.length > 0 ? (

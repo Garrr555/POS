@@ -69,7 +69,7 @@ const Sidebar = () => {
                 {user?.name}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
-                {user?.role === "admin" ? "Admin" : "Member"}
+                {user?.role === "admin" ? "Admin" : "Member"} | {user?.email}
               </p>
             </div>
           </div>

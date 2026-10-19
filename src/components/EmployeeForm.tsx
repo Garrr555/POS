@@ -218,9 +218,9 @@ const EmployeeForm = ({
       rounded-lg
       w-full
       outline-none
-      focus:border-indigo-500
+      focus:border-orange-500
       focus:ring-2
-      focus:ring-indigo-500/10
+      focus:ring-orange-500/10
       disabled:opacity-50
     "
             >
@@ -285,9 +285,9 @@ const EmployeeForm = ({
       rounded-lg
       w-full
       outline-none
-      focus:border-indigo-500
+      focus:border-orange-500
       focus:ring-2
-      focus:ring-indigo-500/10
+      focus:ring-orange-500/10
       disabled:opacity-50
     "
             >
@@ -347,9 +347,9 @@ const EmployeeForm = ({
       rounded-lg
       w-full
       outline-none
-      focus:border-indigo-500
+      focus:border-orange-500
       focus:ring-2
-      focus:ring-indigo-500/10
+      focus:ring-orange-500/10
     "
             >
               <option value="" disabled>
@@ -393,7 +393,7 @@ const EmployeeForm = ({
         <button
           type="submit"
           disabled={loading || loadingDivisi}
-          className="rounded-lg w-1/8 py-3 bg-linear-to-r from-indigo-600 to-indigo-500 text-white text-sm font-semibold hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
+          className="rounded-lg w-1/8 py-3 bg-linear-to-r from-orange-600 to-orange-500 text-white text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
         >
           {loading && <Loader className="w-4 h-4 animate-spin" />}
 
