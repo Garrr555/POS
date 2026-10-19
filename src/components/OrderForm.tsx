@@ -99,52 +99,13 @@ const OrderForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="flex items-center justify-center mx-auto w-full gap-5">
-        <div className="w-full">
-          <label
-            htmlFor=""
-            className="mb-2 block text-sm font-medium text-slate-700"
-          >
-            Nama Pembeli
-          </label>
-          <input
-            type="text"
-            placeholder="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
-          />
-        </div>
-
-        <div className="w-full">
-          <label className="mb-2 block text-sm font-medium text-slate-700">
-            Metode Pembayaran
-          </label>
-
-          <select
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
-            required
-          >
-            <option value="cash">Cash / Tunai</option>
-            <option value="qris">QRIS</option>
-            <option value="transfer">Transfer Bank</option>
-            <option value="debit">Kartu Debit</option>
-            <option value="credit">Kartu Kredit</option>
-          </select>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Product Catalog */}
         <section>
-          <h3 className="font-semibold text-slate-800">Pilih Produk</h3>
           <input
             type="text"
             placeholder="Cari Menu"
-            className="my-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+            className="mb-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
           />
 
           <div className="max-h-[420px] space-y-3 overflow-y-auto pr-1">
@@ -160,21 +121,21 @@ const OrderForm = ({
                     <div className="flex gap-3">
                       <img
                         src={product.image}
-                        width={100}
-                        className="bg-cover"
+                        className="max-h-[100px] w-1/3 overflow-hidden bg-cover"
                       />
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-800">
-                          {product.name}
-                        </p>
+                      <div className="max-w-2/3">
+                        <div className="">
+                          <p className="truncate text-sm font-semibold text-slate-800">
+                            {product.name}
+                          </p>
+                          <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
+                            {product.type}
+                          </span>
+                        </div>
 
                         <p className="mt-1 text-sm text-orange-600">
                           {formatRupiah(Number(product.price) || 0)}
                         </p>
-
-                        <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
-                          {product.type}
-                        </span>
                       </div>
                     </div>
 
@@ -217,74 +178,103 @@ const OrderForm = ({
         </section>
 
         {/* Order Summary */}
-        <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <div className="mb-4 flex items-center gap-2">
-            <ShoppingCart size={19} className="text-orange-500" />
-            <h3 className="font-semibold text-slate-800">Ringkasan Order</h3>
+        <section className="flex flex-col gap-2">
+          <div className="flex items-center justify-between mx-auto w-full gap-2">
+            <div className="w-full">
+              <input
+                type="text"
+                placeholder="Nama Pembeli"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+              />
+            </div>
 
-            <span className="ml-auto rounded-full bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-700">
-              {cartItems.reduce((sum, item) => sum + item.quantity, 0)} item
-            </span>
+            <div className="w-full">
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10"
+                required
+              >
+                <option value="cash">Cash / Tunai</option>
+                <option value="qris">QRIS</option>
+                <option value="transfer">Transfer Bank</option>
+                <option value="debit">Kartu Debit</option>
+                <option value="credit">Kartu Kredit</option>
+              </select>
+            </div>
           </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 h-full flex flex-col justify-between">
+            <div className="mb-4 flex items-center gap-2">
+              <ShoppingCart size={19} className="text-orange-500" />
+              <h3 className="font-semibold text-slate-800">Ringkasan Order</h3>
 
-          <div className="max-h-[300px] space-y-3 overflow-y-auto">
-            {cartItems.length > 0 ? (
-              cartItems.map((item) => (
-                <div
-                  key={item.product.ID}
-                  className="flex items-start justify-between gap-3 border-b border-slate-200 pb-3"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800">
-                      {item.product.name}
-                    </p>
-
-                    <p className="mt-1 text-xs text-slate-500">
-                      {item.quantity} × {formatRupiah(item.price)}
-                    </p>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">
-                      {formatRupiah(item.subtotal)}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setQuantities((previous) => ({
-                          ...previous,
-                          [item.product.ID]: 0,
-                        }))
-                      }
-                      className="rounded-md p-1 text-red-500 hover:bg-red-50"
-                      aria-label={`Hapus ${item.product.name}`}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-10 text-center">
-                <ShoppingCart
-                  size={30}
-                  className="mx-auto mb-2 text-slate-300"
-                />
-                <p className="text-sm text-slate-500">
-                  Belum ada produk dipilih
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-5 border-t border-slate-200 pt-4">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm text-slate-500">Total Pembayaran</span>
-
-              <span className="text-xl font-bold text-orange-600">
-                {formatRupiah(total)}
+              <span className="ml-auto rounded-full bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-700">
+                {cartItems.reduce((sum, item) => sum + item.quantity, 0)} item
               </span>
+            </div>
+
+            <div className="max-h-[300px] space-y-3 overflow-y-auto">
+              {cartItems.length > 0 ? (
+                cartItems.map((item) => (
+                  <div
+                    key={item.product.ID}
+                    className="flex items-start justify-between gap-3 border-b border-slate-200 pb-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-800">
+                        {item.product.name}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        {item.quantity} × {formatRupiah(item.price)}
+                      </p>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="text-sm font-semibold text-slate-800">
+                        {formatRupiah(item.subtotal)}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setQuantities((previous) => ({
+                            ...previous,
+                            [item.product.ID]: 0,
+                          }))
+                        }
+                        className="rounded-md p-1 text-red-500 hover:bg-red-50"
+                        aria-label={`Hapus ${item.product.name}`}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-10 text-center">
+                  <ShoppingCart
+                    size={30}
+                    className="mx-auto mb-2 text-slate-300"
+                  />
+                  <p className="text-sm text-slate-500">
+                    Belum ada produk dipilih
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 border-t border-slate-200 pt-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-slate-500">Total Pembayaran</span>
+
+                <span className="text-xl font-bold text-orange-600">
+                  {formatRupiah(total)}
+                </span>
+              </div>
             </div>
           </div>
         </section>
