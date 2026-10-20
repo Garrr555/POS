@@ -6,8 +6,8 @@ import {
   Trash2,
   X,
   UtensilsCrossed,
-  ShoppingCart,
   SquareMenu,
+  SquarePlus,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../components/Loading";
@@ -153,7 +153,7 @@ const Menus = () => {
               ))}
             </div>
             <h1 className="text-5xl font-light text-orange-100"> | </h1>
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -163,9 +163,9 @@ const Menus = () => {
                 }}
                 aria-label="Tambah menu"
                 title="Tambah menu"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 px-5 py-3 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 p-2.5 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98]"
               >
-                <SquareMenu size={18} />
+                <SquarePlus size={24} />
               </button>
 
               <button
@@ -173,9 +173,9 @@ const Menus = () => {
                 onClick={() => setShowOrderModal(true)}
                 aria-label="Tambah Order"
                 title="Tambah Order"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 p-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]"
               >
-                <ShoppingCart size={18} />
+                <SquareMenu size={24} />
               </button>
             </div>
           </div>

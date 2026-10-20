@@ -23,6 +23,7 @@ import {
   getTotalItemsCompleted,
   getTotalOrdersCompleted,
   totalRevenueHarga,
+  totalRevenueHpp,
 } from "../utils/orderHelpers";
 import useOrders from "../hooks/useOrders";
 import useStockStats from "../hooks/useStockStats";
@@ -106,6 +107,8 @@ const AdminDashboard = () => {
 
   const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
 
+  const hpp = useMemo(() => totalRevenueHpp(orders), [orders]);
+
   const totalItemsCompleted = useMemo(
     () => getTotalItemsCompleted(orders),
     [orders],
@@ -139,7 +142,7 @@ const AdminDashboard = () => {
     },
     {
       title: "Pendapatan Bersih",
-      value: formatRupiah(revenue),
+      value: formatRupiah(revenue - hpp),
       icon: BanknoteCheck,
       iconClass: "bg-green-50 text-green-600",
     },

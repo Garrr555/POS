@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
 import {
-  formatDate,
   formatPaymentMethod,
   formatRupiah,
 } from "../../utils/orderHelpers";
@@ -40,8 +39,6 @@ const ActionButton = ({
 const HEADERS: { label: string; className: string }[] = [
   { label: "Nomor Order", className: "" },
   { label: "Pelanggan", className: "text-left" },
-  { label: "Kasir", className: "text-left" },
-  { label: "Tanggal", className: "text-center" },
   { label: "Pembayaran", className: "text-center" },
   { label: "Total", className: "text-center" },
   { label: "Status", className: "text-center" },
@@ -83,16 +80,6 @@ const OrderTable = ({
             </td>
 
             <td className="px-5 py-3.5 text-slate-700">{order.name || "-"}</td>
-
-            <td className="px-5 py-3.5">
-              <p className="text-slate-700">
-                {order.user?.name || `User #${order.userId}`}
-              </p>
-            </td>
-
-            <td className="whitespace-nowrap px-5 py-3.5 text-slate-500 text-center">
-              {formatDate(order.CreatedAt)}
-            </td>
 
             <td className="whitespace-nowrap px-5 py-3.5 text-slate-500 text-center">
               {formatPaymentMethod(order.paymentMethod)}

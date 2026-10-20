@@ -6,7 +6,7 @@ export type Stat = {
 
 /** Ringkasan statistik dalam satu kartu, dipisah garis tipis. */
 const StatsBar = ({ stats }: { stats: Stat[] }) => (
-  <section className="grid grid-cols-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+  <section className="grid grid-cols-1 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white sm:grid-cols-4 sm:divide-x sm:divide-y-0">
     {stats.map(({ label, value, hint }) => (
       <div key={label} className="p-5">
         <p className="text-sm text-slate-500">{label}</p>

@@ -5,7 +5,6 @@ import CustomFetch from "../config/db";
 import type { EventType } from "../types/type";
 import { toast } from "react-toastify";
 import {
-  FileText,
   ImagePlus,
   Loader,
   Lock,
@@ -51,6 +50,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
     description: initialData?.description ?? "",
     location: initialData?.location ?? "",
     price: initialData?.price ?? "",
+    hpp: initialData?.hpp ?? "",
     type: initialData?.type ?? "",
     datetime: formatDateTimeLocal(initialData?.datetime),
     tagId: "10",
@@ -69,6 +69,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
         description: "",
         location: "",
         price: "",
+        hpp: "",
         type: "",
         datetime: "",
         tagId: "10",
@@ -90,6 +91,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
       description: initialData.description ?? "",
       location: initialData.location ?? "",
       price: initialData.price ?? "",
+      hpp: initialData.hpp ?? "",
       type: initialData.type ?? "",
       datetime: formatDateTimeLocal(initialData.datetime),
       tagId: "10",
@@ -132,6 +134,7 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
       payload.append("link", String(formData.link));
       payload.append("liveLink", String(formData.liveLink));
       payload.append("price", String(formData.price));
+      payload.append("hpp", String(formData.hpp));
       payload.append("count", String(formData.count));
       payload.append("phone", String(formData.phone));
       payload.append("tagId", String(formData.tagId));
@@ -211,28 +214,25 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
           </div>
 
           <div>
-            <label className="block mb-2">Location</label>
+            <label className="block mb-2">Price</label>
             <input
               className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
-              type="text"
-              value={formData.location}
+              type="number"
+              value={formData.price}
               onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
+                setFormData({ ...formData, price: e.target.value })
               }
             />
           </div>
 
           <div>
-            <label className="block mb-2">Time</label>
+            <label className="block mb-2">Hpp</label>
             <input
-              type="datetime-local"
-              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
-              value={formData.datetime}
+              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
+              type="number"
+              value={formData.hpp}
               onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  datetime: e.target.value,
-                })
+                setFormData({ ...formData, hpp: e.target.value })
               }
             />
           </div>
@@ -256,13 +256,28 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
           </div>
 
           <div>
-            <label className="block mb-2">Price</label>
+            <label className="block mb-2">Location</label>
             <input
               className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
-              type="number"
-              value={formData.price}
+              type="text"
+              value={formData.location}
               onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
+                setFormData({ ...formData, location: e.target.value })
+              }
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2">Time</label>
+            <input
+              type="datetime-local"
+              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
+              value={formData.datetime}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  datetime: e.target.value,
+                })
               }
             />
           </div>
@@ -403,94 +418,6 @@ const EventForm = ({ initialData, onSuccess, onCancel }: EmployeeFormProps) => {
             {imageFile
               ? `Selected: ${imageFile.name}`
               : "Choose a new image to replace the current one. Leave empty to keep the existing image."}
-          </p>
-        </div>
-      </div>
-
-      {/* Event Attachment */}
-      <div className="border border-slate-100 rounded-xl p-5 sm:p-6">
-        <h3 className="font-medium mb-5 pb-4 border-b border-slate-100">
-          Event Attachment
-        </h3>
-
-        <div className="space-y-4">
-          {attachmentFile ? (
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-orange-100 bg-orange-50/50 p-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-orange-100 text-orange-600 shrink-0">
-                  <FileText size={22} />
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">
-                    {attachmentFile.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {(attachmentFile.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setAttachmentFile(null)}
-                className="p-2 rounded-lg text-red-500 hover:bg-red-50"
-                title="Remove selected file"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          ) : initialData?.file ? (
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-orange-100 text-orange-600 shrink-0">
-                  <FileText size={22} />
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800">
-                    Current Attachment
-                  </p>
-                  <a
-                    href={initialData.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-orange-600 hover:underline"
-                  >
-                    View existing file
-                  </a>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-32 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-              <FileText size={28} className="mb-2" />
-              <p className="text-sm">No attachment selected</p>
-            </div>
-          )}
-
-          <label className="flex items-center justify-center gap-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors">
-            <Upload size={17} />
-            {attachmentFile ? "Change File" : "Choose File"}
-
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-
-                if (file) {
-                  setAttachmentFile(file);
-                }
-
-                e.target.value = "";
-              }}
-            />
-          </label>
-
-          <p className="text-xs text-slate-400">
-            Choose a new file to replace the existing attachment. Leave empty to
-            keep the current file.
           </p>
         </div>
       </div>

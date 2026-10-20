@@ -10,7 +10,7 @@ import {
 } from "../../utils/orderHelpers";
 
 import type { OrderType } from "../../types/type";
-import TotalRow from "../TotalRow";
+import TotalHppRow from "../TotalHppRow";
 
 const InfoRow = ({
   label,
@@ -73,8 +73,14 @@ const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => (
               <tr>
                 <th className="px-4 py-2.5 font-medium">Produk</th>
                 <th className="px-4 py-2.5 text-center font-medium">Qty</th>
-                <th className="px-4 py-2.5 text-right font-medium">Harga</th>
-                <th className="px-4 py-2.5 text-right font-medium">Subtotal</th>
+                <th className="px-4 py-2.5 text-center font-medium">HPP</th>
+                <th className="px-4 py-2.5 text-center font-medium">Harga</th>
+                <th className="px-4 py-2.5 text-center font-medium">
+                  Hpp Total
+                </th>
+                <th className="px-4 py-2.5 text-center font-medium">
+                  Subtotal
+                </th>
               </tr>
             </thead>
 
@@ -89,11 +95,19 @@ const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => (
                     {item.quantity}
                   </td>
 
-                  <td className="whitespace-nowrap px-4 py-2.5 text-right text-slate-600">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-center text-slate-600">
+                    {formatRupiah(Number(item.hpp))}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-2.5 text-center text-slate-600">
                     {formatRupiah(Number(item.price))}
                   </td>
 
-                  <td className="whitespace-nowrap px-4 py-2.5 text-right font-medium text-slate-800">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-center text-slate-800">
+                    {formatRupiah(Number(item.subtotalHpp))}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-2.5 text-center font-medium text-orange-600">
                     {formatRupiah(Number(item.subtotal))}
                   </td>
                 </tr>
@@ -103,7 +117,7 @@ const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => (
         </div>
       </div>
 
-      <TotalRow total={Number(order.total)} />
+      <TotalHppRow total={Number(order.total)} hpp={Number(order.totalHpp)} />
     </div>
   </ModalShell>
 );

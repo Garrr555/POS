@@ -85,6 +85,14 @@ export const totalRevenueHarga = (orders: OrderType[]): number => {
   );
 };
 
+export const totalRevenueHpp = (orders: OrderType[]): number => {
+  return orders.reduce(
+    (total, order) =>
+      isCompleted(order.status) ? total + Number(order.totalHpp || 0) : total,
+    0,
+  );
+};
+
 export const getTotalItemsCompleted = (orders: OrderType[]): number => {
   return orders.reduce(
     (total, order) =>
@@ -124,4 +132,8 @@ export const getTotalItems = (orders: OrderType[]): number => {
 
 export const getTotalRevenue = (orders: OrderType[]): number => {
   return orders.reduce((total, order) => total + Number(order.total || 0), 0);
+};
+
+export const getTotalHpp = (orders: OrderType[]): number => {
+  return orders.reduce((total, order) => total + Number(order.totalHpp || 0), 0);
 };

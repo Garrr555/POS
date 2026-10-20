@@ -20,6 +20,7 @@ export interface EventType {
   type: string | null;
   count: number | null;
   price: number | null;
+  hpp: number | null;
   phone: number | null;
   link: string | null;
   liveLink: string | null;
@@ -114,6 +115,7 @@ export interface OrderType {
   user: UserType;
 
   total: number;
+  totalHpp: number;
   paymentMethod: string;
   status: string;
 
@@ -134,7 +136,9 @@ export interface OrderItemType {
 
   quantity: number;
   price: number;
+  hpp: number;
   subtotal: number;
+  subtotalHpp: number;
 }
 
 export interface CreateOrderItemRequest {

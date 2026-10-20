@@ -1,16 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
 import type { EventType } from "../types/type";
-import useFormatDate from "../hooks/useFormatDate";
-import useTags from "../hooks/useTags";
-import CustomFetch from "../config/db";
-import { toast } from "react-toastify";
-import {
-  Download,
-  ExternalLink,
-  FileText,
-  Loader,
-} from "lucide-react";
 
 interface EventDetailProps {
   initialData: EventType | null;
@@ -18,13 +7,6 @@ interface EventDetailProps {
 }
 
 const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
-  const { formatDate } = useFormatDate();
-  const { tags } = useTags();
-
-  const [loadingAction, setLoadingAction] = useState<
-    "data" | "file" | "save" | null
-  >(null);
-
   if (!initialData) {
     return (
       <div className="p-6 text-center text-slate-500">
@@ -32,8 +14,6 @@ const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
       </div>
     );
   }
-
-  const selectedTag = tags.find((tag) => tag.ID === initialData.tagId);
 
   const formatPrice = (price: number | undefined) => {
     return new Intl.NumberFormat("id-ID", {
@@ -49,91 +29,26 @@ const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
       value: initialData.name || "-",
     },
     {
-      label: "Upload",
-      value: initialData.user?.name || "-",
-    },
-    {
       label: "Description",
       value: initialData.description || "-",
-    },
-    {
-      label: "Location",
-      value: initialData.location || "-",
-    },
-    {
-      label: "Time",
-      value: initialData.datetime ? formatDate(initialData.datetime) : "-",
-    },
-    {
-      label: "Tag",
-      value: selectedTag?.name || "-",
-    },
-    {
-      label: "Type",
-      value: initialData.type || "-",
     },
     {
       label: "Price",
       value: formatPrice(Number(initialData.price)),
     },
     {
-      label: "Stock",
-      value: initialData.count ?? 0,
+      label: "Hpp",
+      value: formatPrice(Number(initialData.hpp)),
     },
     {
-      label: "Link",
-      value: initialData.link ?? "-",
+      label: "Type",
+      value: initialData.type || "-",
     },
     {
-      label: "Live",
-      value: initialData.liveLink ?? "-",
+      label: "Upload",
+      value: initialData.user?.name || "-",
     },
   ];
-
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = filename;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    window.URL.revokeObjectURL(url);
-  };
-
-  const handleDownloadFile = async () => {
-    if (!initialData.file) {
-      toast.error("File attachment tidak tersedia");
-      return;
-    }
-
-    try {
-      setLoadingAction("file");
-
-      const response = await CustomFetch.get(
-        `/event/${initialData.ID}/download/file`,
-        {
-          responseType: "blob",
-        },
-      );
-
-      const filename =
-        initialData.file.split("/").pop()?.split("?")[0] ||
-        `event-${initialData.ID}-file`;
-
-      downloadBlob(response.data, filename);
-
-      toast.success("File berhasil diunduh");
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal mendownload file");
-    } finally {
-      setLoadingAction(null);
-    }
-  };
 
   return (
     <div className="space-y-6 max-w-3xl animate-fade-in">
@@ -175,63 +90,6 @@ const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
             </div>
           ))}
         </div>
-
-        {/* Event Attachment */}
-        <div className="border border-slate-100 rounded-xl p-5 sm:p-6">
-          <h3 className="font-medium text-slate-800 mb-4">Event Attachment</h3>
-
-          {initialData.file ? (
-            <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 bg-slate-50">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-indigo-100 text-indigo-600 shrink-0">
-                  <FileText size={22} />
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">
-                    Event Attachment
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    File tersedia untuk dilihat atau diunduh
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={initialData.file}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition-colors text-sm"
-                  title="Open file"
-                >
-                  <ExternalLink size={16} />
-                  <span className="hidden sm:inline">View</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={handleDownloadFile}
-                  disabled={loadingAction !== null}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors text-sm"
-                  title="Download file"
-                >
-                  {loadingAction === "file" ? (
-                    <Loader size={16} className="animate-spin" />
-                  ) : (
-                    <Download size={16} />
-                  )}
-                  <span className="hidden sm:inline">Download</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-              <FileText size={32} className="mb-2" />
-              <p className="text-sm">No attachment available</p>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Action Buttons */}
@@ -239,7 +97,6 @@ const EventDetail = ({ initialData, onCancel }: EventDetailProps) => {
         <button
           type="button"
           onClick={onCancel}
-          disabled={loadingAction !== null}
           className="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors text-sm font-medium"
         >
           Close

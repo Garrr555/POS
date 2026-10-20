@@ -4,12 +4,14 @@ import useOrders from "../hooks/useOrders";
 
 import {
   formatRupiah,
+  getTotalHpp,
   getTotalItems,
   getTotalItemsCompleted,
   getTotalOrders,
   getTotalOrdersCompleted,
   getTotalRevenue,
   totalRevenueHarga,
+  totalRevenueHpp,
 } from "../utils/orderHelpers";
 
 import type { OrderType } from "../types/type";
@@ -81,6 +83,7 @@ const Orders = () => {
   }, [orders, search]);
 
   const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
+  const hpp = useMemo(() => totalRevenueHpp(orders), [orders]);
 
   const totalItemsCompleted = useMemo(
     () => getTotalItemsCompleted(orders),
@@ -97,6 +100,8 @@ const Orders = () => {
   const totalAllItems = useMemo(() => getTotalItems(orders), [orders]);
 
   const totalAllRevenue = useMemo(() => getTotalRevenue(orders), [orders]);
+
+  const totalAllHpp = useMemo(() => getTotalHpp(orders), [orders]);
 
   const resetSearch = () => setSearch("");
 
@@ -161,6 +166,16 @@ const Orders = () => {
               selectedMonth || selectedYear
                 ? formatRupiah(revenue)
                 : formatRupiah(totalAllRevenue),
+          },
+          {
+            label:
+              selectedMonth || selectedYear
+                ? "Pendapatan Bersih Bulan ini"
+                : "Pendapatan Bersih",
+            value:
+              selectedMonth || selectedYear
+                ? formatRupiah(revenue - hpp)
+                : formatRupiah(totalAllRevenue - totalAllHpp),
           },
         ]}
       />
