@@ -25,10 +25,10 @@ const Employees = () => {
   const getUsersByDivisi = async () => {
     try {
       setLoading(true);
-        const response = await CustomFetch.get(`/divisis/7/users`);
+      const response = await CustomFetch.get(`/divisis/7/users`);
 
-        setEmployees(response.data.users);
-        setLoading(false);
+      setEmployees(response.data.users);
+      setLoading(false);
     } catch (error) {
       console.error("Failed to load employees:", error);
       setEmployees([]);
@@ -45,7 +45,6 @@ const Employees = () => {
 
       setShowDeleteModal(false);
       setSelectedEmployee(null);
-
     } catch (error: any) {
       console.log(error);
 
@@ -185,9 +184,11 @@ const Employees = () => {
             <div className="p-6">
               <EmployeeForm
                 initialData={selectedEmployee}
-                onSuccess={() => {
+                onSuccess={async () => {
                   setShowCreateModal(false);
                   setSelectedEmployee(null);
+
+                  await getUsersByDivisi();
                 }}
                 onCancel={() => {
                   setShowCreateModal(false);

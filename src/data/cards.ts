@@ -1,13 +1,12 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   Building2Icon,
   CalendarIcon,
   CircleAlert,
   Clock,
   DollarSignIcon,
-  FileIcon,
   FileTextIcon,
   MailIcon,
-  ShieldIcon,
   Tag,
   User2Icon,
   type LucideIcon,
@@ -43,27 +42,6 @@ export const CardsEmployee = (data: UserType): CardsEmployeeType[] => [
     subtitle:
       "Manage Employee, Departments, Payroll, and system configurations",
     icon: MailIcon,
-  },
-  {
-    value: data?.divisi?.divisi ?? "gk ada",
-    title: "Department",
-    subtitle:
-      "Manage Employee, Departments, Payroll, and system configurations",
-    icon: ShieldIcon,
-  },
-  {
-    value: data.id,
-    title: "Days Present",
-    subtitle:
-      "Manage Employee, Departments, Payroll, and system configurations",
-    icon: CalendarIcon,
-  },
-  {
-    value: data.id,
-    title: "Pending Leaves",
-    subtitle:
-      "Manage Employee, Departments, Payroll, and system configurations",
-    icon: FileIcon,
   },
   {
     value: useFormatRupiah(data.salary),

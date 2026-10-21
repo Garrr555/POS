@@ -20,8 +20,11 @@ import EventForm from "../components/EventForm";
 import DataCard from "../components/DataCard";
 import useOrders from "../hooks/useOrders";
 import OrderForm from "../components/OrderForm";
+import { useAuthStore } from "../store/auth.store";
 
 const Menus = () => {
+  const { user } = useAuthStore();
+  const role = user?.role;
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Food");
 
@@ -154,19 +157,21 @@ const Menus = () => {
             </div>
             <h1 className="text-5xl font-light text-orange-100"> | </h1>
             <div className="flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedEmployee(null);
-                  setSelectedSaveEmployee(null);
-                  setShowCreateModal(true);
-                }}
-                aria-label="Tambah menu"
-                title="Tambah menu"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 p-2.5 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98]"
-              >
-                <SquarePlus size={24} />
-              </button>
+              <div className={`${role === "member" ? "hidden" : ""}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedEmployee(null);
+                    setSelectedSaveEmployee(null);
+                    setShowCreateModal(true);
+                  }}
+                  aria-label="Tambah menu"
+                  title="Tambah menu"
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 p-2.5 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98] ${role == "member" ? "hidden" : ""}`}
+                >
+                  <SquarePlus size={24} />
+                </button>
+              </div>
 
               <button
                 type="button"

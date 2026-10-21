@@ -4,7 +4,6 @@ import { useState } from "react";
 import CustomFetch from "../config/db";
 import type { UserType } from "../types/type";
 import { toast } from "react-toastify";
-import useFormatDate from "../hooks/useFormatDate";
 import useDivisi from "../hooks/useDivisi";
 import { Loader } from "lucide-react";
 
@@ -20,25 +19,26 @@ const EmployeeForm = ({
   onCancel,
 }: EmployeeFormProps) => {
   const isEditMode = !!initialData;
-  const { formatDate } = useFormatDate();
 
   const [loading, setLoading] = useState(false);
-  const { divisis, loading: loadingDivisi } = useDivisi();
+  const { loading: loadingDivisi } = useDivisi();
+  const TypeURI = import.meta.env.VITE_TYPE_URI;
 
   const [formData, setFormData] = useState({
     name: initialData?.name ?? "",
     lastName: initialData?.lastName ?? "",
     phone: initialData?.phone ?? "",
     email: initialData?.email ?? "",
+    password: initialData?.password ?? "",
     department: initialData?.department ?? "",
-    role: initialData?.role ?? "",
+    role: "member",
     divisi: initialData?.divisi?.divisi ?? "",
     salary: Number(initialData?.salary ?? 0),
     createdAt: initialData?.CreatedAt ?? "",
-    divisiId: initialData?.divisiId ?? initialData?.divisi?.id ?? "",
+    divisiId: 7,
     status: initialData?.status ?? "",
     bio: initialData?.bio ?? "",
-    platform: initialData?.platform ?? "Dashboard",
+    platform: TypeURI,
   });
 
   console.log(formData);
@@ -137,23 +137,6 @@ const EmployeeForm = ({
           </div>
           <div>
             <label htmlFor="" className="block mb-2">
-              Join Date
-            </label>
-            <input
-              disabled
-              className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
-              type="text"
-              value={formatDate(formData.createdAt)}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  createdAt: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div>
-            <label htmlFor="" className="block mb-2">
               Bio
             </label>
             <input
@@ -193,47 +176,6 @@ const EmployeeForm = ({
                 })
               }
             />
-          </div>
-          <div>
-            <label htmlFor="divisiID" className="block mb-2">
-              Department
-            </label>
-
-            <select
-              id="divisiID"
-              name="divisiID"
-              value={formData.divisiId}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  divisiId: Number(e.target.value),
-                })
-              }
-              disabled={loadingDivisi}
-              required
-              className="
-      border border-slate-100
-      bg-slate-50
-      p-2
-      rounded-lg
-      w-full
-      outline-none
-      focus:border-orange-500
-      focus:ring-2
-      focus:ring-orange-500/10
-      disabled:opacity-50
-    "
-            >
-              <option value="" disabled>
-                {loadingDivisi ? "Loading Divisions..." : "Select Division"}
-              </option>
-
-              {divisis.map((divisi) => (
-                <option key={divisi.ID} value={divisi.ID}>
-                  {divisi?.divisi}
-                </option>
-              ))}
-            </select>
           </div>
           <div>
             <label htmlFor="salary" className="block mb-2">
@@ -325,56 +267,19 @@ const EmployeeForm = ({
             />
           </div>
           <div>
-            <label htmlFor="role" className="block mb-2">
-              System Role
-            </label>
-
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  role: e.target.value,
-                })
-              }
-              required
-              className="
-      border border-slate-100
-      bg-slate-50
-      p-2
-      rounded-lg
-      w-full
-      outline-none
-      focus:border-orange-500
-      focus:ring-2
-      focus:ring-orange-500/10
-    "
-            >
-              <option value="" disabled>
-                Select Role
-              </option>
-
-              <option value="admin">Admin</option>
-              <option value="member">Member</option>
-            </select>
-          </div>
-          <div>
             <label htmlFor="" className="block mb-2">
-              Platform
+              Password
             </label>
             <input
               className="border border-slate-100 bg-slate-50 p-2 rounded-lg w-full"
               type="text"
-              value={formData.platform}
+              value={formData.password}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  platform: e.target.value,
+                  password: e.target.value,
                 })
               }
-              required
             />
           </div>
         </div>

@@ -1,15 +1,81 @@
 import { useAuthStore } from "../store/auth.store";
 import type { UserType } from "../types/type";
-import { CardsEmployee } from "../data/cards";
+import {
+  BanknoteArrowDown,
+  DollarSignIcon,
+  ListOrdered,
+  MailIcon,
+  SquareMenu,
+  User2Icon,
+} from "lucide-react";
+import {
+  formatRupiah,
+  getTotalItemsCompleted,
+  getTotalOrdersCompleted,
+  totalRevenueHarga,
+} from "../utils/orderHelpers";
+import { useMemo } from "react";
+import useOrders from "../hooks/useOrders";
 
 const EmployeeDashboard = (data: UserType) => {
-  const cards = CardsEmployee(data ?? "");
   const { user } = useAuthStore();
+  const { orders } = useOrders();
+
+  const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
+
+  const totalItemsCompleted = useMemo(
+    () => getTotalItemsCompleted(orders),
+    [orders],
+  );
+
+  const totalOrdersCompleted = useMemo(
+    () => getTotalOrdersCompleted(orders),
+    [orders],
+  );
+
+  const summaryCards = [
+    {
+      value: data.name,
+      title: "Name",
+      iconClass: "bg-purple-50 text-purple-600",
+      icon: User2Icon,
+    },
+    {
+      value: data.email,
+      title: "Email",
+      iconClass: "bg-purple-50 text-purple-600",
+      icon: MailIcon,
+    },
+    {
+      value: formatRupiah(data.salary),
+      title: "Latest Payslip",
+      iconClass: "bg-purple-50 text-purple-600",
+      icon: DollarSignIcon,
+    },
+    {
+      title: "Total Order",
+      value: totalOrdersCompleted,
+      icon: ListOrdered,
+      iconClass: "bg-purple-50 text-purple-600",
+    },
+    {
+      title: "Total Item Terjual",
+      value: totalItemsCompleted,
+      icon: SquareMenu,
+      iconClass: "bg-yellow-50 text-yellow-600",
+    },
+    {
+      title: "Total Penjualan",
+      value: formatRupiah(revenue),
+      icon: BanknoteArrowDown,
+      iconClass: "bg-blue-50 text-blue-600",
+    },
+  ];
   return (
     <div className="animate-fade-in">
       <div className="">
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-          Welcome, <span className="text-indigo-600">{user?.name}</span>
+          Welcome, <span className="text-orange-600">{user?.name}</span>
         </h1>
 
         <p className="mt-2 text-sm font-medium text-slate-500">
@@ -19,24 +85,29 @@ const EmployeeDashboard = (data: UserType) => {
         </p>
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card, i) => (
-          <div
-            key={i}
-            className="relative flex items-center justify-between overflow-hidden p-5 sm:p-6 group my-2 bg-slate-50"
-          >
-            <div>
-              <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full bg-slate-500/70 group-hover:bg-indigo-500/70" />
+        {summaryCards.map((card) => {
+          const Icon = card.icon;
 
-              <p className="text-sm font-medium text-slate-700">{card.title}</p>
+          return (
+            <div
+              key={card.title}
+              className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${card.iconClass}`}
+              >
+                <Icon size={23} />
+              </div>
 
-              <p className="mt-1 text-xl font-bold text-slate-900 overflow-hidden">
-                {card.value}
-              </p>
+              <div className="min-w-0">
+                <p className="text-sm text-slate-500">{card.title}</p>
+                <p className="mt-1 break-words text-xl font-bold text-slate-900">
+                  {card.value}
+                </p>
+              </div>
             </div>
-
-            <card.icon className="size-10 rounded-lg bg-slate-100 p-2.5 text-slate-600 transition-colors duration-200 group-hover:bg-indigo-50 group-hover:text-indigo-600" />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

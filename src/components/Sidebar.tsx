@@ -57,7 +57,7 @@ const Sidebar = () => {
 
       {/* User Profile Card */}
       {userName && (
-        <div className="mx-3 mb-4 mt-1 p-3 rounded-lg bg-white/3 border border-white-4">
+        <div className="mx-3 mb-4 mt-1 p-3 rounded-lg bg-white/3 border border-white-4 overflow-hidden">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-orange-800 flex items-center justify-center ring-1 ring-white/10 shrink-0">
               <span className="text-slate-400 text-xs font-semibold">
