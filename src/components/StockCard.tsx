@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import type { EventType } from "../types/type";
+import { useAuthStore } from "../store/auth.store";
 
 type StockCardProps = {
   employee: EventType;
@@ -32,6 +33,7 @@ export default function StockCard({
   onStockChange,
   isUpdating,
 }: StockCardProps) {
+  const { user } = useAuthStore();
   const [localStock, setLocalStock] = useState(
     Math.max(0, Number(employee.count) || 0),
   );
@@ -92,7 +94,10 @@ export default function StockCard({
         )}
 
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/45" />
+        <div
+          onClick={() => onDetail(employee)}
+          className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/45"
+        />
 
         <span
           className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-semibold shadow-sm ${stockStatus.className}`}
@@ -102,7 +107,7 @@ export default function StockCard({
         </span>
 
         {/* Actions */}
-        <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:opacity-100">
+        <div className={`${user?.role === "admin" ? "":"hidden"} absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:opacity-100`}>
           <button
             type="button"
             onClick={() => onDetail(employee)}

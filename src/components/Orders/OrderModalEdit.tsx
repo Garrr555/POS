@@ -266,12 +266,6 @@ const EditOrderModal = ({
 
         <TotalRow total={total} />
 
-        {/* Warning */}
-        <p className="text-xs leading-5 text-slate-500">
-          Perubahan item dan status dapat memengaruhi stok produk. Backend akan
-          menghitung ulang stok berdasarkan order sebelumnya dan data baru.
-        </p>
-
         {/* Footer */}
         <div className="flex justify-end gap-2">
           <button

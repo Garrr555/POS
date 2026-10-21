@@ -25,6 +25,7 @@ import EventDetail from "../components/EventDetail";
 
 import type { EventType } from "../types/type";
 import useEvents from "../hooks/useEvents";
+import { useAuthStore } from "../store/auth.store";
 
 const STOCK_DEBOUNCE_MS = 500;
 
@@ -35,6 +36,7 @@ type PendingStockChange = {
 };
 
 export default function Stock() {
+  const { user } = useAuthStore();
   const { events, tagEvent, loading, getEvents, myEvent, saveEvents } =
     useEvents("1000", "1", "", "10");
 
@@ -363,9 +365,8 @@ export default function Stock() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl space-y-6">
-        
         {/* Search */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="rounded-2xl">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-sm">
               <Search
@@ -396,19 +397,21 @@ export default function Stock() {
                 Refresh
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedEmployee(null);
-                  setIsFormOpen(true);
-                }}
-                aria-label="Tambah stok"
-                title="Tambah stok"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]"
-              >
-                <Plus size={18} />
-                Add Stock
-              </button>
+              <div className={`${user?.role === "admin" ? "" : "hidden"}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedEmployee(null);
+                    setIsFormOpen(true);
+                  }}
+                  aria-label="Tambah stok"
+                  title="Tambah stok"
+                  className={`${user?.role === "admin" ? "" : "hidden"} inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]`}
+                >
+                  <Plus size={18} />
+                  Add Stock
+                </button>
+              </div>
             </div>
           </div>
         </div>

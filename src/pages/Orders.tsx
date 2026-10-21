@@ -176,6 +176,7 @@ const Orders = () => {
               selectedMonth || selectedYear
                 ? formatRupiah(revenue - hpp)
                 : formatRupiah(totalAllRevenue - totalAllHpp),
+            auth: true,
           },
         ]}
       />

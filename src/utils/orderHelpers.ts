@@ -115,25 +115,38 @@ export const getTotalOrdersCompleted = (orders: OrderType[]): number => {
 };
 
 export const getTotalOrders = (orders: OrderType[]): number => {
-  return orders.length;
+  return orders.reduce(
+    (total, order) => (isCompleted(order.status) ? total + 1 : total),
+    0,
+  );
 };
 
 export const getTotalItems = (orders: OrderType[]): number => {
   return orders.reduce(
     (total, order) =>
-      total +
-      (order.items || []).reduce(
-        (itemTotal, item) => itemTotal + Number(item.quantity || 0),
-        0,
-      ),
+      isCompleted(order.status)
+        ? total +
+          (order.items || []).reduce(
+            (itemTotal, item) => itemTotal + Number(item.quantity || 0),
+            0,
+          )
+        : total,
     0,
   );
 };
 
 export const getTotalRevenue = (orders: OrderType[]): number => {
-  return orders.reduce((total, order) => total + Number(order.total || 0), 0);
+  return orders.reduce(
+    (total, order) =>
+      isCompleted(order.status) ? total + Number(order.total || 0) : total,
+    0,
+  );
 };
 
 export const getTotalHpp = (orders: OrderType[]): number => {
-  return orders.reduce((total, order) => total + Number(order.totalHpp || 0), 0);
+  return orders.reduce(
+    (total, order) =>
+      isCompleted(order.status) ? total + Number(order.totalHpp || 0) : total,
+    0,
+  );
 };
