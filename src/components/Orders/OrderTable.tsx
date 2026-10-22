@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-import { formatPaymentMethod, formatRupiah } from "../../utils/orderHelpers";
+import { formatRupiah } from "../../utils/orderHelpers";
 
 import type { OrderType } from "../../types/type";
 import StatusBadge from "../StatusBadge";
@@ -37,7 +37,7 @@ const ActionButton = ({
 const HEADERS: { label: string; className: string }[] = [
   { label: "Nomor Order", className: "hidden md:table-cell" },
   { label: "Pelanggan", className: "text-left" },
-  { label: "Pembayaran", className: "text-center hidden md:table-cell" },
+  { label: "Kasir", className: "text-left hidden md:table-cell" },
   { label: "Total", className: "text-center hidden md:table-cell" },
   { label: "Status", className: "text-center hidden sm:table-cell" },
   { label: "Aksi", className: "text-center" },
@@ -83,8 +83,8 @@ const OrderTable = ({
                 {order.name || "-"}
               </td>
 
-              <td className="whitespace-nowrap px-5 py-3.5 text-slate-500 text-center hidden md:table-cell">
-                {formatPaymentMethod(order.paymentMethod)}
+              <td className="px-5 py-3.5 text-slate-700">
+                {order.user.name || "-"}
               </td>
 
               <td className="whitespace-nowrap px-5 py-3.5 font-medium text-slate-900 text-center hidden md:table-cell">

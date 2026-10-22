@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { Link, useLocation } from "react-router";
 import { useAuthStore } from "../store/auth.store";
 import { useEffect, useState } from "react";
 import {
   ChevronRightIcon,
+  CirclePercent,
   LogOutIcon,
   MenuIcon,
-  UserIcon,
   XIcon,
 } from "lucide-react";
 import { navItems } from "../data/navItems";
@@ -35,7 +36,7 @@ const Sidebar = () => {
       <div className="p-5 border-b border-white/6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <UserIcon className="text-white size-7" />
+            <CirclePercent className="text-white size-7" />
             <div>
               <p className="font-semibold text-[13px] text-white tracking-wide">
                 Peace POS
@@ -95,10 +96,10 @@ const Sidebar = () => {
                 ${isActive ? "bg-orange-600/12 text-orange-300" : "text-slate-300 hover:text-white hover:bg-white/4"}`}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-orange-600" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.75 h-5 rounded-r-full bg-orange-600" />
               )}
               <item.icon
-                className={`w-[17px] h-[17px] shrink-0 ${isActive ? "text-orange-300" : "text-slate-400 group-hover:text-slate-300"}`}
+                className={`w-4.25 h-4.25 shrink-0 ${isActive ? "text-orange-300" : "text-slate-400 group-hover:text-slate-300"}`}
               />
               <span className="flex-1">{item.name}</span>
               {isActive && (
@@ -115,7 +116,7 @@ const Sidebar = () => {
           onClick={() => setLogoutOpen(true)}
           className="w-full flex items-center gap-3 p-3 rounded-md text-[13px] font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/8 transition-all duration-150"
         >
-          <LogOutIcon className="w-[17px] h-[17px]" />
+          <LogOutIcon className="w-4.25 h-4.25" />
           <span>Log Out</span>
         </button>
       </div>
@@ -143,7 +144,7 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar - Dekstop */}
-      <aside className="hidden lg:flex flex-col h-full w-[260px] bg-linear-to-b from-orange-800 via-orange-900 to-orange-950 text-white shrink-0 border-r border-white/4">
+      <aside className="hidden lg:flex flex-col h-full w-65 bg-linear-to-b from-orange-800 via-orange-900 to-orange-950 text-white shrink-0 border-r border-white/4">
         {sidebarContent}
       </aside>
 
