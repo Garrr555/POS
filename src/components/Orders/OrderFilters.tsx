@@ -1,4 +1,4 @@
-import { RotateCcw, Search} from "lucide-react";
+import { RotateCcw, Search } from "lucide-react";
 
 import { MONTH_OPTIONS } from "../../utils/orderHelpers";
 
@@ -36,9 +36,9 @@ const OrderFilters = ({
   const hasDateFilter = Boolean(month || year);
 
   return (
-    <div className="flex justify-between items-center w-full flex-col gap-3 lg:w-auto lg:flex-row lg:items-center rounded-xl">
+    <div className="flex justify-between items-center w-full flex-col gap-3 lg:w-auto sm:flex-row lg:items-center rounded-xl">
       {/* Search */}
-      <div className="group relative w-full lg:w-72">
+      <div className="group relative w-full sm:w-1/2">
         <Search
           size={18}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-orange-500"
@@ -54,7 +54,7 @@ const OrderFilters = ({
       </div>
 
       {/* Date Filters */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-end gap-2 w-full sm:w-1/2">
         {/* Month */}
         <div className="relative min-w-0 flex-1 sm:w-32 sm:flex-none">
           <select
@@ -116,7 +116,7 @@ const OrderFilters = ({
           }`}
         >
           <RotateCcw size={14} />
-          <span className="hidden sm:inline">Reset</span>
+          <span className="hidden lg:inline">Reset</span>
         </button>
       </div>
     </div>

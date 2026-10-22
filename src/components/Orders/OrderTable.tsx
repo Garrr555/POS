@@ -35,11 +35,11 @@ const ActionButton = ({
 );
 
 const HEADERS: { label: string; className: string }[] = [
-  { label: "Nomor Order", className: "" },
+  { label: "Nomor Order", className: "hidden md:table-cell" },
   { label: "Pelanggan", className: "text-left" },
-  { label: "Pembayaran", className: "text-center" },
-  { label: "Total", className: "text-center" },
-  { label: "Status", className: "text-center" },
+  { label: "Pembayaran", className: "text-center hidden md:table-cell" },
+  { label: "Total", className: "text-center hidden md:table-cell" },
+  { label: "Status", className: "text-center hidden sm:table-cell" },
   { label: "Aksi", className: "text-center" },
 ];
 
@@ -61,7 +61,7 @@ const OrderTable = ({
   const { user } = useAuthStore();
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[1050px] text-left text-sm">
+      <table className="w-full text-left text-sm">
         <thead className="border-b border-slate-100 text-xs text-slate-500">
           <tr>
             {HEADERS.map(({ label, className }) => (
@@ -75,7 +75,7 @@ const OrderTable = ({
         <tbody className="divide-y divide-slate-100">
           {orders.map((order) => (
             <tr key={order.ID} className="transition hover:bg-slate-50">
-              <td className="whitespace-nowrap px-5 py-3.5 font-medium text-slate-900">
+              <td className="whitespace-nowrap px-5 py-3.5 font-medium text-slate-900 hidden md:table-cell">
                 {order.orderNumber || `Order #${order.ID}`}
               </td>
 
@@ -83,15 +83,15 @@ const OrderTable = ({
                 {order.name || "-"}
               </td>
 
-              <td className="whitespace-nowrap px-5 py-3.5 text-slate-500 text-center">
+              <td className="whitespace-nowrap px-5 py-3.5 text-slate-500 text-center hidden md:table-cell">
                 {formatPaymentMethod(order.paymentMethod)}
               </td>
 
-              <td className="whitespace-nowrap px-5 py-3.5 font-medium text-slate-900 text-center">
+              <td className="whitespace-nowrap px-5 py-3.5 font-medium text-slate-900 text-center hidden md:table-cell">
                 {formatRupiah(Number(order.total))}
               </td>
 
-              <td className="px-5 py-3.5 text-center">
+              <td className="px-5 py-3.5 text-center hidden sm:table-cell">
                 <StatusBadge status={order.status} />
               </td>
 

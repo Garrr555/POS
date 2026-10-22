@@ -66,7 +66,7 @@ const Employees = () => {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between gap-2 w-full mb-6">
         {/* Search Bar */}
-        <div className="flex flex-col w-7/8 sm:flex-row gap-3 animate-fade-in">
+        <div className="flex flex-col w-3/4 sm:flex-row gap-3 animate-fade-in">
           {/* Search Input */}
           <div
             className="
@@ -118,10 +118,10 @@ const Employees = () => {
             setShowCreateModal(true);
           }}
           type="button"
-          className="w-1/8 py-3 px-4 bg-linear-to-r from-orange-600 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
+          className="w-1/4 py-3 px-4 bg-linear-to-r from-orange-600 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-orange-700 hover:to-orange-600 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center gap-2"
         >
           <Plus size={16} />
-          Add User
+          <p className="hidden md:flex">Add User</p>
         </button>
       </div>
 

@@ -22,7 +22,9 @@ const LandingPage = () => {
               <ShoppingCart size={20} />
             </div>
 
-            <span className="text-xl font-bold text-orange-600">Peace POS</span>
+            <span className="text-xl font-bold text-orange-600 hidden sm:flex">
+              Peace POS
+            </span>
           </div>
 
           <Link
@@ -31,7 +33,7 @@ const LandingPage = () => {
           >
             {user ? (
               <div className="flex justify-center items-center gap-2">
-                Dashboard
+                <div className="hidden sm:flex">Dashboard</div>
                 <LayoutDashboard />
               </div>
             ) : (
@@ -45,7 +47,7 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero */}
-      <main>
+      <main className="pt-40 lg:pt-0">
         <section className="mx-auto flex min-h-[calc(100vh-73px)] max-w-7xl items-center px-6 py-16">
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
             {/* Left */}

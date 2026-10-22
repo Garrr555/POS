@@ -6,8 +6,8 @@ import {
   Trash2,
   X,
   UtensilsCrossed,
-  SquareMenu,
-  SquarePlus,
+  Plus,
+  ListPlus,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../components/Loading";
@@ -113,7 +113,7 @@ const Menus = () => {
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="w-full">
           <div className="flex min-w-full items-center justify-between gap-1 sm:w-1/2">
-            <div className="relative w-full sm:max-w-md">
+            <div className="relative w-full sm:max-w-md hidden md:flex">
               <Search
                 size={19}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -138,7 +138,10 @@ const Menus = () => {
                 </button>
               )}
             </div>
-            <h1 className="text-5xl font-light text-orange-100"> | </h1>
+            <h1 className="text-5xl font-light text-orange-100 hidden md:flex">
+              {" "}
+              |{" "}
+            </h1>
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <button
@@ -169,7 +172,7 @@ const Menus = () => {
                   title="Tambah menu"
                   className={`inline-flex items-center justify-center gap-2 rounded-xl bg-orange-50 border border-orange-500 p-2.5 text-sm font-semibold text-orange-500 shadow-sm transition hover:bg-orange-100 active:scale-[0.98] ${role == "member" ? "hidden" : ""}`}
                 >
-                  <SquarePlus size={24} />
+                  <Plus size={24} />
                 </button>
               </div>
 
@@ -180,7 +183,7 @@ const Menus = () => {
                 title="Tambah Order"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 p-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]"
               >
-                <SquareMenu size={24} />
+                <ListPlus size={24} />
               </button>
             </div>
           </div>
@@ -258,7 +261,7 @@ const Menus = () => {
                 <h2 className="text-lg font-bold text-slate-900">
                   Detail Menu
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-500 hidden md:flex">
                   Informasi lengkap produk.
                 </p>
               </div>
@@ -301,7 +304,7 @@ const Menus = () => {
                     : "Tambah Menu Baru"}
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-500 hidden md:flex">
                   {selectedEmployee || selectedSaveEmployee
                     ? "Perbarui informasi produk."
                     : "Masukkan informasi makanan atau minuman."}
@@ -425,7 +428,7 @@ const Menus = () => {
                   Buat Order Baru
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-500 hidden md:flex">
                   Pilih produk, tentukan jumlah, dan metode pembayaran.
                 </p>
               </div>

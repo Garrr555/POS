@@ -128,7 +128,7 @@ const OrderForm = ({
                           <p className="truncate text-sm font-semibold text-slate-800">
                             {product.name}
                           </p>
-                          <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
+                          <span className="hidden mt-1 md:inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
                             {product.type}
                           </span>
                         </div>
@@ -179,7 +179,7 @@ const OrderForm = ({
 
         {/* Order Summary */}
         <section className="flex flex-col gap-2">
-          <div className="flex items-center justify-between mx-auto w-full gap-2">
+          <div className="flex flex-col md:flex-row items-center justify-between mx-auto w-full gap-2">
             <div className="w-full">
               <input
                 type="text"
