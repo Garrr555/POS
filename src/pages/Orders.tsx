@@ -27,6 +27,7 @@ import OrderDetailModal from "../components/Orders/OrderModalDetail";
 import EditOrderModal from "../components/Orders/OrderModalEdit";
 import DeleteOrderModal from "../components/Orders/OrderModalDelete";
 import StatsBar from "../components/StatBar";
+import OrderChart from "../components/Orders/OrderChart";
 
 /* Field yang dapat dicari lewat kolom search */
 const getSearchableText = (order: OrderType): string[] =>
@@ -180,6 +181,11 @@ const Orders = () => {
           },
         ]}
       />
+
+      {/* Order Charts */}
+      <div className="hidden lg:inline">
+        <OrderChart orders={orders} month={selectedMonth} year={selectedYear} />
+      </div>
 
       {/* Order list */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">

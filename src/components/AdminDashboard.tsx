@@ -27,6 +27,7 @@ import {
 } from "../utils/orderHelpers";
 import useOrders from "../hooks/useOrders";
 import useStockStats from "../hooks/useStockStats";
+import DashboardOrderChart from "./Orders/OrderChartDashboard";
 
 const formatRupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -232,6 +233,9 @@ const AdminDashboard = () => {
           );
         })}
       </section>
+
+      {/* Order Monitoring */}
+      <DashboardOrderChart orders={orders} />
 
       {/* Menu Distribution */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
