@@ -35,17 +35,19 @@ const Sidebar = () => {
       {/* Brand Header */}
       <div className="p-5 border-b border-white/6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <CirclePercent className="text-white size-7" />
-            <div>
-              <p className="font-semibold text-[13px] text-white tracking-wide">
-                Peace POS
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium">
-                Point of Sale System
-              </p>
+          <Link to={"/"}>
+            <div className="flex items-center gap-3">
+              <CirclePercent className="text-white size-7" />
+              <div>
+                <p className="font-semibold text-[13px] text-white tracking-wide">
+                  Peace POS
+                </p>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Point of Sale System
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
           {/* Close Button on Mobile */}
           <button
             onClick={() => setMobileOpen(false)}

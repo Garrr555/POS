@@ -188,7 +188,7 @@ const Orders = () => {
       </div>
 
       {/* Order list */}
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white lg:mt-5">
         <div className="border-b border-slate-100 p-4 sm:p-5">
           <OrderFilters
             search={search}
