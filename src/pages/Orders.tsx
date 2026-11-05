@@ -171,6 +171,16 @@ const Orders = () => {
           {
             label:
               selectedMonth || selectedYear
+                ? "Total HPP Bulan ini"
+                : "Total HPP",
+            value:
+              selectedMonth || selectedYear
+                ? formatRupiah(hpp)
+                : formatRupiah(totalAllHpp),
+          },
+          {
+            label:
+              selectedMonth || selectedYear
                 ? "Pendapatan Bersih Bulan ini"
                 : "Pendapatan Bersih",
             value:

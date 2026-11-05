@@ -24,6 +24,7 @@ type ChartData = {
   label: string;
   orders: number;
   revenue: number;
+  hpp: number;
   netRevenue: number;
 };
 
@@ -78,6 +79,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
         label: String(index + 1),
         orders: 0,
         revenue: 0,
+        hpp: 0,
         netRevenue: 0,
       }));
 
@@ -97,6 +99,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
 
         dailyData[index].orders += 1;
         dailyData[index].revenue += Number(order.total || 0);
+        dailyData[index].hpp += Number(order.totalHpp || 0);
         dailyData[index].netRevenue +=
           Number(order.total || 0) - Number(order.totalHpp || 0);
       });
@@ -110,6 +113,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
       label,
       orders: 0,
       revenue: 0,
+      hpp: 0,
       netRevenue: 0,
     }));
 
@@ -124,6 +128,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
 
       monthlyData[index].orders += 1;
       monthlyData[index].revenue += Number(order.total || 0);
+      monthlyData[index].hpp += Number(order.totalHpp || 0);
       monthlyData[index].netRevenue +=
         Number(order.total || 0) - Number(order.totalHpp || 0);
     });
@@ -141,9 +146,9 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
   };
 
   return (
-    <section className="space-y-6">
+    <section className=" flex justify-between gap-2 items-center">
       {/* Orders Chart */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5 w-full h-full">
         <div className="mb-5">
           <h3 className="text-base font-semibold text-slate-800">
             Statistik Orders
@@ -154,7 +159,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
           </p>
         </div>
 
-        <div className="h-72 w-full">
+        <div className="h-80 w-full">
           {!hasData ? (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
               Belum ada data orders.
@@ -214,14 +219,14 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
       </div>
 
       {/* Revenue Chart */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5 w-full">
         <div className="mb-5">
           <h3 className="text-base font-semibold text-slate-800">
             Statistik Pendapatan
           </h3>
 
           <p className="mt-1 text-sm text-slate-500">
-            Perbandingan pendapatan kotor dan bersih.
+            Perbandingan pendapatan kotor, hpp, dan bersih.
           </p>
         </div>
 
@@ -265,11 +270,13 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
 
                 <Tooltip
                   contentStyle={tooltipStyle}
-                  formatter={(value, name) => [
+                  formatter={(value, name, props) => [
                     formatRupiah(Number(value)),
-                    name === "revenue"
+                    props.dataKey === "revenue" || name === "revenue"
                       ? "Pendapatan Kotor"
-                      : "Pendapatan Bersih",
+                      : props.dataKey === "hpp"
+                        ? "HPP"
+                        : "Pendapatan Bersih",
                   ]}
                   labelFormatter={(label) => `Periode: ${label}`}
                 />
@@ -279,6 +286,16 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
                   dataKey="revenue"
                   name="Pendapatan Kotor"
                   stroke="#f97316"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 5 }}
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="hpp"
+                  name="HPP"
+                  stroke="#3b82f6"
                   strokeWidth={2.5}
                   dot={false}
                   activeDot={{ r: 5 }}
@@ -302,6 +319,11 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
             Pendapatan Kotor
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+            HPP
           </div>
 
           <div className="flex items-center gap-2">
