@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import { formatRupiah } from "../../utils/orderHelpers";
 
@@ -49,6 +55,15 @@ type OrderTableProps = {
   onShowDetail: (order: OrderType) => void;
   onEdit: (order: OrderType) => void;
   onDelete: (order: OrderType) => void;
+
+  currentPage: number;
+  totalPages: number;
+  itemsPerPage: number;
+  totalItems: number;
+  startItem: number;
+  endItem: number;
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (value: number) => void;
 };
 
 const OrderTable = ({
@@ -57,6 +72,14 @@ const OrderTable = ({
   onShowDetail,
   onEdit,
   onDelete,
+  currentPage,
+  totalPages,
+  itemsPerPage,
+  totalItems,
+  startItem,
+  endItem,
+  onPageChange,
+  onItemsPerPageChange,
 }: OrderTableProps) => {
   const { user } = useAuthStore();
   return (
@@ -130,6 +153,53 @@ const OrderTable = ({
           ))}
         </tbody>
       </table>
+
+      <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Informasi jumlah data */}
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <span>
+            Menampilkan {startItem}-{endItem} dari {totalItems} order
+          </span>
+        </div>
+
+        {/* Kontrol pagination */}
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
+          <select
+            value={itemsPerPage}
+            onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
+            className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-600 outline-none focus:border-orange-400"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="rounded-lg px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft />
+            </button>
+
+            <span className="px-2 text-xs font-medium text-slate-600">
+              {currentPage} / {totalPages}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="rounded-lg px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

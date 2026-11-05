@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useMemo, useState } from "react";
 
 import useOrders from "../hooks/useOrders";
 
@@ -44,6 +45,9 @@ const Orders = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const { orders, loading, error, getOrders } = useOrders(
     "",
     selectedMonth,
@@ -83,6 +87,19 @@ const Orders = () => {
     );
   }, [orders, search]);
 
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+
+    return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredOrders, currentPage, itemsPerPage]);
+
+  const startItem =
+    filteredOrders.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+
+  const endItem = Math.min(currentPage * itemsPerPage, filteredOrders.length);
+
   const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
   const hpp = useMemo(() => totalRevenueHpp(orders), [orders]);
 
@@ -111,6 +128,10 @@ const Orders = () => {
     setSelectedYear("");
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedMonth, selectedYear]);
+
   const renderOrderList = () => {
     if (loading) return <PageSpinner />;
 
@@ -124,11 +145,22 @@ const Orders = () => {
 
     return (
       <OrderTable
-        orders={filteredOrders}
+        orders={paginatedOrders}
         actionsDisabled={loadingDetail}
         onShowDetail={showDetail}
         onEdit={startEdit}
         onDelete={requestDelete}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        totalItems={filteredOrders.length}
+        startItem={startItem}
+        endItem={endItem}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(value) => {
+          setItemsPerPage(value);
+          setCurrentPage(1);
+        }}
       />
     );
   };
