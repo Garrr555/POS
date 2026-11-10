@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutGridIcon, ListOrdered, SquareMenu, UserIcon, Warehouse } from "lucide-react";
+import { ClipboardPlus, LayoutGridIcon, ListOrdered, SquareMenu, UserIcon, Warehouse } from "lucide-react";
 
 export type NavItemsType = {
   name: string;
@@ -15,4 +15,5 @@ export const navItems = (role: string): NavItemsType[] => [
   { name: "Menus", href: "/menus", icon: SquareMenu },
   { name: "Orders", href: "/orders", icon: ListOrdered },
   { name: "Stock", href: "/stock", icon: Warehouse },
+  { name: "Reports", href: "/reports", icon: ClipboardPlus },
 ];

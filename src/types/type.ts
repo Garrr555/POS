@@ -158,3 +158,32 @@ export interface UpdateOrderRequest {
   paymentMethod: string;
   status: string;
 }
+
+export interface DailyStockReportType {
+  id: number;
+  userId: number;
+  eventId: number;
+  eventName: string;
+  date: string;
+
+  initialCount: number;
+  soldCount: number;
+  remainingCount: number;
+
+  hpp: number;
+  hppLost: number;
+
+  event?: EventType;
+}
+
+export interface DailyStockReportSummary {
+  totalSold: number;
+  totalRemaining: number;
+  totalHppLost: number;
+}
+
+export interface DailyStockReportResponse {
+  message: string;
+  summary: DailyStockReportSummary;
+  reports: DailyStockReportType[];
+}

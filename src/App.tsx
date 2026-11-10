@@ -10,6 +10,7 @@ import Employees from "./pages/Employees";
 import Menus from "./pages/Menus";
 import Stock from "./pages/Stock";
 import Orders from "./pages/Orders";
+import Reports from "./pages/Reports";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/menus" element={<Menus />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/stock" element={<Stock />} />
+            <Route path="/reports" element={<Reports />} />
           </Route>
           <Route path="*" element={<Navigate to={"/dashboard"} replace />} />
         </Route>
