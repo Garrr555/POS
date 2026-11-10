@@ -70,7 +70,7 @@ export default function Stock() {
   // Ambil hanya produk bertipe stock.
   useEffect(() => {
     const stockProducts = (tagEvent ?? []).filter(
-      (item) => item.type?.trim().toLowerCase() === "stock",
+      (item) => item.type?.trim().toLowerCase() !== "stock",
     );
 
     setEmployees((previous) => {
@@ -409,7 +409,7 @@ export default function Stock() {
                   className={`${user?.role === "admin" ? "" : "hidden"} inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]`}
                 >
                   <Plus size={18} />
-                  Add Stock
+                  Add Menu
                 </button>
               </div>
             </div>
@@ -444,7 +444,7 @@ export default function Stock() {
             <p className="mt-2 text-sm text-slate-500">
               {search
                 ? "Coba gunakan kata kunci pencarian yang berbeda."
-                : 'Produk dengan type "stock" akan ditampilkan di sini.'}
+                : "Menu yang tersedia akan ditampilkan di sini."}
             </p>
           </div>
         )}
