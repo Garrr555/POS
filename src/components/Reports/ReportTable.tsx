@@ -62,9 +62,6 @@ const ReportTable = ({
 
                   <div>
                     <p className="font-medium text-slate-900">{report.name}</p>
-                    <p className="mt-0.5 text-xs text-slate-400">
-                      Laporan stok harian
-                    </p>
                   </div>
                 </div>
               </td>

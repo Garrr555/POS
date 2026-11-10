@@ -3,18 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import useOrders from "../hooks/useOrders";
 
-import {
-  formatRupiah,
-  getTotalHpp,
-  getTotalItems,
-  getTotalItemsCompleted,
-  getTotalOrders,
-  getTotalOrdersCompleted,
-  getTotalRevenue,
-  totalRevenueHarga,
-  totalRevenueHpp,
-} from "../utils/orderHelpers";
-
 import type { OrderType } from "../types/type";
 import useOrderActions from "../utils/useDecoration";
 import { PageSpinner } from "../components/Spinner";
@@ -27,8 +15,6 @@ import OrderFilters from "../components/Orders/OrderFilters";
 import OrderDetailModal from "../components/Orders/OrderModalDetail";
 import EditOrderModal from "../components/Orders/OrderModalEdit";
 import DeleteOrderModal from "../components/Orders/OrderModalDelete";
-import StatsBar from "../components/StatBar";
-import OrderChart from "../components/Orders/OrderChart";
 
 /* Field yang dapat dicari lewat kolom search */
 const getSearchableText = (order: OrderType): string[] =>
@@ -53,8 +39,6 @@ const Orders = () => {
     selectedMonth,
     selectedYear,
   );
-
-  const { orders: allOrders } = useOrders("", "", "");
 
   const {
     selectedOrder,
@@ -99,27 +83,6 @@ const Orders = () => {
     filteredOrders.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
 
   const endItem = Math.min(currentPage * itemsPerPage, filteredOrders.length);
-
-  const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
-  const hpp = useMemo(() => totalRevenueHpp(orders), [orders]);
-
-  const totalItemsCompleted = useMemo(
-    () => getTotalItemsCompleted(orders),
-    [orders],
-  );
-
-  const totalOrdersCompleted = useMemo(
-    () => getTotalOrdersCompleted(orders),
-    [orders],
-  );
-
-  const totalAllOrders = useMemo(() => getTotalOrders(allOrders), [allOrders]);
-
-  const totalAllItems = useMemo(() => getTotalItems(orders), [orders]);
-
-  const totalAllRevenue = useMemo(() => getTotalRevenue(orders), [orders]);
-
-  const totalAllHpp = useMemo(() => getTotalHpp(orders), [orders]);
 
   const resetSearch = () => setSearch("");
 
@@ -167,68 +130,6 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen animate-fade-in space-y-6 pb-8">
-      {/* Statistics */}
-      <StatsBar
-        stats={[
-          {
-            label:
-              selectedMonth || selectedYear
-                ? "Total Order Bulan ini"
-                : "Total Order",
-            value:
-              selectedMonth || selectedYear
-                ? totalOrdersCompleted
-                : totalAllOrders,
-          },
-          {
-            label:
-              selectedMonth || selectedYear
-                ? "Total Item Terjual Bulan ini"
-                : "Total Item Terjual",
-            value:
-              selectedMonth || selectedYear
-                ? totalItemsCompleted
-                : totalAllItems,
-          },
-          {
-            label:
-              selectedMonth || selectedYear
-                ? "Pendapatan Kotor Bulan ini"
-                : "Pendapatan Kotor",
-            value:
-              selectedMonth || selectedYear
-                ? formatRupiah(revenue)
-                : formatRupiah(totalAllRevenue),
-          },
-          {
-            label:
-              selectedMonth || selectedYear
-                ? "Total HPP Bulan ini"
-                : "Total HPP",
-            value:
-              selectedMonth || selectedYear
-                ? formatRupiah(hpp)
-                : formatRupiah(totalAllHpp),
-          },
-          {
-            label:
-              selectedMonth || selectedYear
-                ? "Pendapatan Bersih Bulan ini"
-                : "Pendapatan Bersih",
-            value:
-              selectedMonth || selectedYear
-                ? formatRupiah(revenue - hpp)
-                : formatRupiah(totalAllRevenue - totalAllHpp),
-            auth: true,
-          },
-        ]}
-      />
-
-      {/* Order Charts */}
-      <div className="hidden lg:inline">
-        <OrderChart orders={orders} month={selectedMonth} year={selectedYear} />
-      </div>
-
       {/* Order list */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white lg:mt-5">
         <div className="border-b border-slate-100 p-4 sm:p-5">

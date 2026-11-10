@@ -102,6 +102,12 @@ const ReportDetailModal = ({
     0,
   );
 
+  const totalHppSold = report.items.reduce(
+    (total, item) =>
+      total + Number(item.soldCount || 0) * Number(item.hpp || 0),
+    0,
+  );
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-5"
@@ -143,7 +149,7 @@ const ReportDetailModal = ({
         {/* Content */}
         <div className="overflow-y-auto p-5 sm:p-6">
           {/* Summary */}
-          <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
               <p className="text-xs text-slate-500">Total Stok Awal</p>
               <p className="mt-2 text-xl font-semibold text-slate-800">
@@ -151,9 +157,9 @@ const ReportDetailModal = ({
               </p>
             </div>
 
-            <div className="rounded-xl border border-green-100 bg-green-50/50 p-4">
+            <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
               <p className="text-xs text-slate-500">Total Terjual</p>
-              <p className="mt-2 text-xl font-semibold text-green-600">
+              <p className="mt-2 text-xl font-semibold text-blue-600">
                 {totalSold}
               </p>
             </div>
@@ -171,17 +177,17 @@ const ReportDetailModal = ({
                 {formatRupiah(totalHppLost)}
               </p>
             </div>
+
+            <div className="rounded-xl border border-green-100 bg-green-50/50 p-4">
+              <p className="text-xs text-slate-500">Total HPP yang Terjual</p>
+              <p className="mt-2 text-lg font-semibold text-green-600">
+                {formatRupiah(totalHppSold)}
+              </p>
+            </div>
           </div>
 
           {/* Detail Table */}
           <div>
-            <div className="mb-3">
-              <h3 className="font-semibold text-slate-800">Rincian Menu</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                Detail stok dan HPP setiap menu pada laporan ini.
-              </p>
-            </div>
-
             <div className="overflow-x-auto rounded-xl border border-slate-200">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="border-b border-slate-100 bg-slate-50 text-xs text-slate-500">
@@ -201,6 +207,9 @@ const ReportDetailModal = ({
                     </th>
                     <th className="px-4 py-3 text-right font-medium">
                       HPP Tidak Terjual
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium">
+                      HPP Terjual
                     </th>
                     {/* <th className="px-4 py-3 text-center font-medium">Aksi</th> */}
                   </tr>
@@ -315,13 +324,24 @@ const ReportDetailModal = ({
                           )}
                         </td>
 
-                        <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-slate-900">
+                        <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-orange-600">
                           {formatRupiah(
                             isEditing
                               ? (editForm[item.id]?.remainingCount ??
                                   item.remainingCount) *
                                   (editForm[item.id]?.hpp ?? item.hpp)
                               : Number(item.hppLost),
+                          )}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-3.5 text-right font-medium text-green-600">
+                          {formatRupiah(
+                            (isEditing
+                              ? (editForm[item.id]?.soldCount ?? item.soldCount)
+                              : Number(item.soldCount)) *
+                              (isEditing
+                                ? (editForm[item.id]?.hpp ?? item.hpp)
+                                : Number(item.hpp)),
                           )}
                         </td>
 
@@ -397,8 +417,11 @@ const ReportDetailModal = ({
 
                     <td className="px-4 py-3" />
 
-                    <td className="whitespace-nowrap px-4 py-3 text-right font-bold text-slate-900">
+                    <td className="whitespace-nowrap px-4 py-3 text-right font-bold text-orange-600">
                       {formatRupiah(totalHppLost)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right font-bold text-green-600">
+                      {formatRupiah(totalHppSold)}
                     </td>
                   </tr>
                 </tfoot>

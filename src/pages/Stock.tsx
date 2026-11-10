@@ -5,15 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  Package,
-  Search,
-  RefreshCw,
-  Trash2,
-  X,
-  AlertTriangle,
-  Plus,
-} from "lucide-react";
+import { Package, Search, Trash2, X, AlertTriangle } from "lucide-react";
 
 import { toast } from "react-toastify";
 
@@ -25,7 +17,6 @@ import EventDetail from "../components/EventDetail";
 
 import type { EventType } from "../types/type";
 import useEvents from "../hooks/useEvents";
-import { useAuthStore } from "../store/auth.store";
 
 const STOCK_DEBOUNCE_MS = 500;
 
@@ -36,7 +27,6 @@ type PendingStockChange = {
 };
 
 export default function Stock() {
-  const { user } = useAuthStore();
   const { events, tagEvent, loading, getEvents, myEvent, saveEvents } =
     useEvents("1000", "1", "", "10");
 
@@ -54,7 +44,6 @@ export default function Stock() {
   const [updatingStockId, setUpdatingStockId] = useState<number | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Timer dan perubahan stok disimpan per produk.
   const stockTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
@@ -271,19 +260,6 @@ export default function Stock() {
     };
   }, []);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-
-    try {
-      await getEvents();
-      toast.success("Data stok berhasil diperbarui");
-    } catch {
-      toast.error("Gagal memperbarui data stok");
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   // Buka modal detail.
   const handleDetail = (item: EventType) => {
     setSelectedEmployee(item);
@@ -381,37 +357,6 @@ export default function Stock() {
                 placeholder="Cari nama atau deskripsi..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100"
               />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
-              >
-                <RefreshCw
-                  size={16}
-                  className={isRefreshing ? "animate-spin" : ""}
-                />
-                Refresh
-              </button>
-
-              <div className={`${user?.role === "admin" ? "" : "hidden"}`}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedEmployee(null);
-                    setIsFormOpen(true);
-                  }}
-                  aria-label="Tambah stok"
-                  title="Tambah stok"
-                  className={`${user?.role === "admin" ? "" : "hidden"} inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-[0.98]`}
-                >
-                  <Plus size={18} />
-                  Add Menu
-                </button>
-              </div>
             </div>
           </div>
         </div>

@@ -2,7 +2,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { FileBarChart, RefreshCw, X } from "lucide-react";
 
-import { formatRupiah } from "../utils/orderHelpers";
+import {
+  formatRupiah,
+  getTotalOrders,
+  getTotalOrdersCompleted,
+  getTotalRevenue,
+  getTotalHpp,
+  totalRevenueHarga,
+  totalRevenueHpp,
+} from "../utils/orderHelpers";
+
 import { PageSpinner } from "../components/Spinner";
 import StatsBar from "../components/StatBar";
 
@@ -10,9 +19,12 @@ import type { DailyStockReportType } from "../types/type";
 import type { DailyReportGroup } from "../types/report";
 
 import useReports from "../hooks/useReports";
+import useOrders from "../hooks/useOrders";
+
 import ReportTable from "../components/Reports/ReportTable";
 import ReportFilters from "../components/Reports/ReportFilters";
 import ReportDetailModal from "../components/Reports/ModalDetail";
+import OrderChart from "../components/Orders/OrderChart";
 
 // Helper ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -34,6 +46,7 @@ const Reports = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
   const [selectedReport, setSelectedReport] = useState<DailyReportGroup | null>(
     null,
@@ -41,8 +54,6 @@ const Reports = () => {
 
   const {
     reports,
-    reportsLength,
-    summary,
     loading,
     loadingClose,
     error,
@@ -51,6 +62,70 @@ const Reports = () => {
     editReport,
     deleteReport,
   } = useReports("", selectedMonth, selectedYear);
+
+  // Orders untuk statistik dan chart
+  const { orders } = useOrders("", selectedMonth, selectedYear);
+  const { orders: allOrders } = useOrders("", "", "");
+
+  // Statistik Reports berdasarkan data yang sudah difilter
+  const reportSummary = useMemo(() => {
+    const currentYear = String(new Date().getFullYear());
+
+    const targetYear = selectedYear || (selectedMonth ? currentYear : "");
+
+    const filtered = reports.filter((report) => {
+      const [year, month] = report.date.slice(0, 10).split("-");
+
+      const matchesMonth = !selectedMonth || month === selectedMonth;
+      const matchesYear = !targetYear || year === targetYear;
+
+      return matchesMonth && matchesYear;
+    });
+
+    return filtered.reduce(
+      (acc, report) => ({
+        totalSold: acc.totalSold + (Number(report.soldCount) || 0),
+        totalRemaining:
+          acc.totalRemaining + (Number(report.remainingCount) || 0),
+        totalHppLost: acc.totalHppLost + (Number(report.hppLost) || 0),
+      }),
+      {
+        totalSold: 0,
+        totalRemaining: 0,
+        totalHppLost: 0,
+      },
+    );
+  }, [reports, selectedMonth, selectedYear]);
+
+  // Statistik Orders
+  const revenue = useMemo(() => totalRevenueHarga(orders), [orders]);
+  const hpp = useMemo(() => totalRevenueHpp(orders), [orders]);
+
+  const totalOrdersCompleted = useMemo(
+    () => getTotalOrdersCompleted(orders),
+    [orders],
+  );
+
+  const totalAllOrders = useMemo(() => getTotalOrders(allOrders), [allOrders]);
+
+  const totalAllRevenue = useMemo(() => getTotalRevenue(orders), [orders]);
+
+  const totalAllHpp = useMemo(() => getTotalHpp(orders), [orders]);
+
+  const totalNetRevenue = useMemo(() => {
+    const gross = selectedMonth || selectedYear ? revenue : totalAllRevenue;
+    const soldHpp = selectedMonth || selectedYear ? hpp : totalAllHpp;
+
+    return gross - soldHpp - reportSummary.totalHppLost;
+  }, [
+    selectedMonth,
+    selectedYear,
+    revenue,
+    totalAllRevenue,
+    hpp,
+    totalAllHpp,
+    reportSummary.totalHppLost,
+  ]);
 
   // Group laporan berdasarkan tanggal
   const groupedReports = useMemo<DailyReportGroup[]>(() => {
@@ -69,7 +144,7 @@ const Reports = () => {
     return Array.from(groups.entries())
       .map(([date, items]) => ({
         date,
-        name: `Laporan Stok Harian - ${new Date(
+        name: `${new Date(
           `${date}T00:00:00`,
         ).toLocaleDateString("id-ID", {
           day: "2-digit",
@@ -122,18 +197,14 @@ const Reports = () => {
   const handleCloseReport = async () => {
     const today = getTodayDate();
 
-    const confirmed = window.confirm(
-      `Tutup laporan stok tanggal ${today}? Data stok dan HPP yang tersisa akan disimpan sebagai laporan harian.`,
-    );
-
-    if (!confirmed) return;
-
     try {
       await closeDailyReport(today);
 
+      setShowCloseConfirm(false);
       window.alert("Laporan stok harian berhasil disimpan.");
     } catch (error) {
       console.error("Failed to close report:", error);
+      window.alert("Gagal menyimpan laporan stok harian.");
     }
   };
 
@@ -254,28 +325,68 @@ const Reports = () => {
   };
 
   return (
-    <div className="min-h-screen animate-fade-in space-y-6 pb-8">
+    <div className="h-screen animate-fade-in space-y-6 pb-8">
+      {/* Order Statistics */}
       {/* Statistics */}
       <StatsBar
         stats={[
           {
-            label: "Total Menu Dilaporkan",
-            value: reportsLength,
+            label:
+              selectedMonth || selectedYear
+                ? "Total Order Bulan ini"
+                : "Total Order",
+            value:
+              selectedMonth || selectedYear
+                ? totalOrdersCompleted
+                : totalAllOrders,
           },
           {
             label: "Total Item Terjual",
-            value: summary.totalSold,
+            value: reportSummary.totalSold,
           },
           {
             label: "Total Stok Tersisa",
-            value: summary.totalRemaining,
+            value: reportSummary.totalRemaining,
           },
           {
-            label: "HPP Stok Tidak Terjual",
-            value: formatRupiah(summary.totalHppLost),
+            label:
+              selectedMonth || selectedYear
+                ? "Pendapatan Kotor Bulan ini"
+                : "Pendapatan Kotor",
+            value:
+              selectedMonth || selectedYear
+                ? formatRupiah(revenue)
+                : formatRupiah(totalAllRevenue),
+          },
+          {
+            label:
+              selectedMonth || selectedYear
+                ? "Total HPP Terjual Bulan ini"
+                : "Total HPP Terjual",
+            value:
+              selectedMonth || selectedYear
+                ? formatRupiah(hpp)
+                : formatRupiah(totalAllHpp),
+          },
+          {
+            label: "Total HPP Tidak Terjual",
+            value: formatRupiah(reportSummary.totalHppLost),
+          },
+          {
+            label:
+              selectedMonth || selectedYear
+                ? "Pendapatan Bersih Bulan ini"
+                : "Pendapatan Bersih",
+            value: formatRupiah(totalNetRevenue),
+            auth: true,
           },
         ]}
       />
+
+      {/* Order Charts */}
+      <div className="hidden lg:block">
+        <OrderChart orders={orders} month={selectedMonth} year={selectedYear} />
+      </div>
 
       {/* Report List */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white lg:mt-5">
@@ -294,7 +405,7 @@ const Reports = () => {
 
             <button
               type="button"
-              onClick={handleCloseReport}
+              onClick={() => setShowCloseConfirm(true)}
               disabled={loadingClose}
               className="flex h-10 items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-orange-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -322,6 +433,73 @@ const Reports = () => {
 
         {renderReportList()}
       </section>
+
+      {/* Close Report Confirmation Modal */}
+      {showCloseConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md animate-fade-in rounded-2xl bg-white p-6 shadow-xl">
+            {/* Icon */}
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+              <FileBarChart size={28} />
+            </div>
+
+            {/* Content */}
+            <div className="mt-4 text-center">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Tutup Laporan Hari Ini?
+              </h3>
+
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                Apakah kamu yakin ingin menutup laporan stok hari ini? Data stok
+                awal, jumlah terjual, stok tersisa, dan HPP akan disimpan
+                sebagai laporan harian.
+              </p>
+
+              <p className="mt-3 rounded-lg bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700">
+                <span className="hidden sm:inline">Tanggal laporan: </span>
+                {new Date(`${getTodayDate()}T00:00:00`).toLocaleDateString(
+                  "id-ID",
+                  {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  },
+                )}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={handleCloseReport}
+                disabled={loadingClose}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingClose ? (
+                  <>
+                    <RefreshCw size={15} className="animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  <>
+                    <FileBarChart size={15} />
+                    Ya, Tutup Laporan
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCloseConfirm(false)}
+                disabled={loadingClose}
+                className="flex-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selectedReport && (
