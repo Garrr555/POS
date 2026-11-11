@@ -144,9 +144,7 @@ const Reports = () => {
     return Array.from(groups.entries())
       .map(([date, items]) => ({
         date,
-        name: `${new Date(
-          `${date}T00:00:00`,
-        ).toLocaleDateString("id-ID", {
+        name: `${new Date(`${date}T00:00:00`).toLocaleDateString("id-ID", {
           day: "2-digit",
           month: "long",
           year: "numeric",
@@ -326,7 +324,6 @@ const Reports = () => {
 
   return (
     <div className="h-screen animate-fade-in space-y-6 pb-8">
-      {/* Order Statistics */}
       {/* Statistics */}
       <StatsBar
         stats={[
@@ -385,7 +382,12 @@ const Reports = () => {
 
       {/* Order Charts */}
       <div className="hidden lg:block">
-        <OrderChart orders={orders} month={selectedMonth} year={selectedYear} />
+        <OrderChart
+          orders={orders}
+          reports={reports}
+          month={selectedMonth}
+          year={selectedYear}
+        />
       </div>
 
       {/* Report List */}
@@ -450,9 +452,7 @@ const Reports = () => {
               </h3>
 
               <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                Apakah kamu yakin ingin menutup laporan stok hari ini? Data stok
-                awal, jumlah terjual, stok tersisa, dan HPP akan disimpan
-                sebagai laporan harian.
+                Apakah kamu yakin ingin menutup laporan stok hari ini?
               </p>
 
               <p className="mt-3 rounded-lg bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700">

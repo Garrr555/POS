@@ -11,11 +11,12 @@ import {
   BarChart,
 } from "recharts";
 
-import type { OrderType } from "../../types/type";
+import type { OrderType, DailyStockReportType } from "../../types/type";
 import { formatRupiah, isCompleted } from "../../utils/orderHelpers";
 
 type OrderChartProps = {
   orders: OrderType[];
+  reports: DailyStockReportType[];
   month: string;
   year: string;
 };
@@ -25,6 +26,7 @@ type ChartData = {
   orders: number;
   revenue: number;
   hpp: number;
+  hppLost: number;
   netRevenue: number;
 };
 
@@ -59,84 +61,94 @@ const formatAxisRupiah = (value: number) => {
   return `Rp${value.toLocaleString("id-ID")}`;
 };
 
-const OrderChart = ({ orders, month, year }: OrderChartProps) => {
+const OrderChart = ({ orders, reports, month, year }: OrderChartProps) => {
   const chartData = useMemo<ChartData[]>(() => {
-    const currentDate = new Date();
+    const currentYear = new Date().getFullYear();
 
-    const selectedYear = year ? Number(year) : currentDate.getFullYear();
+    // Jika bulan dipilih tanpa tahun, gunakan tahun sekarang.
+    // Jika tidak ada filter, tampilkan seluruh data.
+    const selectedYear = year ? Number(year) : month ? currentYear : null;
 
     const selectedMonth = month ? Number(month) - 1 : null;
 
-    // Jika bulan dipilih, grafik menampilkan data per hari.
-    if (selectedMonth !== null) {
-      const daysInMonth = new Date(
-        selectedYear,
-        selectedMonth + 1,
-        0,
-      ).getDate();
-
-      const dailyData = Array.from({ length: daysInMonth }, (_, index) => ({
-        label: String(index + 1),
-        orders: 0,
-        revenue: 0,
-        hpp: 0,
-        netRevenue: 0,
-      }));
-
-      orders.forEach((order) => {
-        if (!isCompleted(order.status)) return;
-
-        const date = new Date(order.CreatedAt);
-
-        if (
-          date.getFullYear() !== selectedYear ||
-          date.getMonth() !== selectedMonth
-        ) {
-          return;
-        }
-
-        const index = date.getDate() - 1;
-
-        dailyData[index].orders += 1;
-        dailyData[index].revenue += Number(order.total || 0);
-        dailyData[index].hpp += Number(order.totalHpp || 0);
-        dailyData[index].netRevenue +=
-          Number(order.total || 0) - Number(order.totalHpp || 0);
-      });
-
-      return dailyData;
-    }
-
-    // Jika hanya tahun dipilih atau tanpa filter,
-    // grafik menampilkan data per bulan.
-    const monthlyData = MONTH_LABELS.map((label) => ({
+    const createEmptyData = (label: string): ChartData => ({
       label,
       orders: 0,
       revenue: 0,
       hpp: 0,
+      hppLost: 0,
       netRevenue: 0,
-    }));
+    });
 
+    // Membuat data harian atau bulanan.
+    const data =
+      selectedMonth !== null
+        ? Array.from(
+            {
+              length: new Date(selectedYear!, selectedMonth + 1, 0).getDate(),
+            },
+            (_, index) => createEmptyData(String(index + 1)),
+          )
+        : MONTH_LABELS.map((label) => createEmptyData(label));
+
+    // Statistik Orders dan pendapatan.
     orders.forEach((order) => {
       if (!isCompleted(order.status)) return;
 
       const date = new Date(order.CreatedAt);
 
-      if (date.getFullYear() !== selectedYear) return;
+      if (selectedYear !== null && date.getFullYear() !== selectedYear) {
+        return;
+      }
 
-      const index = date.getMonth();
+      if (selectedMonth !== null && date.getMonth() !== selectedMonth) {
+        return;
+      }
 
-      monthlyData[index].orders += 1;
-      monthlyData[index].revenue += Number(order.total || 0);
-      monthlyData[index].hpp += Number(order.totalHpp || 0);
-      monthlyData[index].netRevenue +=
-        Number(order.total || 0) - Number(order.totalHpp || 0);
+      const index =
+        selectedMonth !== null ? date.getDate() - 1 : date.getMonth();
+
+      if (!data[index]) return;
+
+      data[index].orders += 1;
+      data[index].revenue += Number(order.total || 0);
+      data[index].hpp += Number(order.totalHpp || 0);
     });
 
-    return monthlyData;
-  }, [orders, month, year]);
+    // Statistik HPP tidak terjual berdasarkan laporan stok.
+    reports.forEach((report) => {
+      const [reportYear, reportMonth, reportDay] = report.date
+        .slice(0, 10)
+        .split("-")
+        .map(Number);
 
-  const hasData = chartData.some((item) => item.orders > 0 || item.revenue > 0);
+      if (selectedYear !== null && reportYear !== selectedYear) {
+        return;
+      }
+
+      if (selectedMonth !== null && reportMonth - 1 !== selectedMonth) {
+        return;
+      }
+
+      const index = selectedMonth !== null ? reportDay - 1 : reportMonth - 1;
+
+      if (!data[index]) return;
+
+      data[index].hppLost += Number(report.hppLost || 0);
+    });
+
+    // Pendapatan bersih = kotor - HPP terjual - HPP tidak terjual.
+    data.forEach((item) => {
+      item.netRevenue = item.revenue - item.hpp - item.hppLost;
+    });
+
+    return data;
+  }, [orders, reports, month, year]);
+
+  const hasData = chartData.some(
+    (item) =>
+      item.orders > 0 || item.revenue > 0 || item.hpp > 0 || item.hppLost > 0,
+  );
 
   const tooltipStyle = {
     borderRadius: "12px",
@@ -146,7 +158,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
   };
 
   return (
-    <section className=" flex justify-between gap-2 items-center">
+    <section className="flex justify-between gap-2 items-center">
       {/* Orders Chart */}
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5 w-full h-full">
         <div className="mb-5">
@@ -226,7 +238,8 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
           </h3>
 
           <p className="mt-1 text-sm text-slate-500">
-            Perbandingan pendapatan kotor, hpp, dan bersih.
+            Perbandingan pendapatan kotor, HPP terjual, HPP tidak terjual, dan
+            pendapatan bersih.
           </p>
         </div>
 
@@ -270,41 +283,60 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
 
                 <Tooltip
                   contentStyle={tooltipStyle}
-                  formatter={(value, name, props) => [
-                    formatRupiah(Number(value)),
-                    props.dataKey === "revenue" || name === "revenue"
-                      ? "Pendapatan Kotor"
-                      : props.dataKey === "hpp"
-                        ? "HPP"
-                        : "Pendapatan Bersih",
-                  ]}
+                  formatter={(value, name) => {
+                    const labels: Record<string, string> = {
+                      revenue: "Pendapatan Kotor",
+                      hpp: "HPP Terjual",
+                      hppLost: "HPP Tidak Terjual",
+                      netRevenue: "Pendapatan Bersih",
+                    };
+
+                    return [
+                      formatRupiah(Number(value)),
+                      labels[String(name)] || String(name),
+                    ];
+                  }}
                   labelFormatter={(label) => `Periode: ${label}`}
                 />
 
+                {/* Pendapatan Kotor */}
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  name="Pendapatan Kotor"
+                  name="revenue"
                   stroke="#f97316"
                   strokeWidth={2.5}
                   dot={false}
                   activeDot={{ r: 5 }}
                 />
 
+                {/* HPP Terjual */}
                 <Line
                   type="monotone"
                   dataKey="hpp"
-                  name="HPP"
+                  name="hpp"
                   stroke="#3b82f6"
                   strokeWidth={2.5}
                   dot={false}
                   activeDot={{ r: 5 }}
                 />
 
+                {/* HPP Tidak Terjual */}
+                <Line
+                  type="monotone"
+                  dataKey="hppLost"
+                  name="hppLost"
+                  stroke="#eab308"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 5 }}
+                />
+
+                {/* Pendapatan Bersih */}
                 <Line
                   type="monotone"
                   dataKey="netRevenue"
-                  name="Pendapatan Bersih"
+                  name="netRevenue"
                   stroke="#16a34a"
                   strokeWidth={2.5}
                   dot={false}
@@ -315,6 +347,7 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
           )}
         </div>
 
+        {/* Chart Legend */}
         <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-600">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
@@ -323,7 +356,12 @@ const OrderChart = ({ orders, month, year }: OrderChartProps) => {
 
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            HPP
+            HPP Terjual
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+            HPP Tidak Terjual
           </div>
 
           <div className="flex items-center gap-2">
