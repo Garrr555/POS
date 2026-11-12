@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
-import { FileBarChart, RefreshCw, X } from "lucide-react";
+import { FileBarChart, RefreshCw, Trash2, X } from "lucide-react";
 
 import {
   formatRupiah,
@@ -25,6 +25,7 @@ import ReportTable from "../components/Reports/ReportTable";
 import ReportFilters from "../components/Reports/ReportFilters";
 import ReportDetailModal from "../components/Reports/ModalDetail";
 import OrderChart from "../components/Orders/OrderChart";
+import { toast } from "react-toastify";
 
 // Helper ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -47,6 +48,11 @@ const Reports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+  const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
+  const [selectedReportGroup, setSelectedReportGroup] =
+    useState<DailyReportGroup | null>(null);
+  const [loadingDeleteGroup, setLoadingDeleteGroup] = useState(false);
 
   const [selectedReport, setSelectedReport] = useState<DailyReportGroup | null>(
     null,
@@ -199,10 +205,10 @@ const Reports = () => {
       await closeDailyReport(today);
 
       setShowCloseConfirm(false);
-      window.alert("Laporan stok harian berhasil disimpan.");
+      toast.success("Laporan stok harian berhasil disimpan.");
     } catch (error) {
       console.error("Failed to close report:", error);
-      window.alert("Gagal menyimpan laporan stok harian.");
+      toast.error("Gagal menyimpan laporan stok harian.");
     }
   };
 
@@ -240,17 +246,22 @@ const Reports = () => {
   };
 
   // Delete Report Group
-  const handleDeleteReportGroup = async (report: DailyReportGroup) => {
-    const confirmed = window.confirm(
-      `Apakah kamu yakin ingin menghapus seluruh laporan tanggal ${report.name}?\n\nTotal ${report.items.length} menu akan dihapus.`,
-    );
 
-    if (!confirmed) return;
+  const handleDeleteReportGroup = (report: DailyReportGroup) => {
+    setSelectedReportGroup(report);
+    setShowDeleteGroupConfirm(true);
+  };
+
+  // Confirm Delete Report Group
+  const confirmDeleteReportGroup = async () => {
+    if (!selectedReportGroup) return;
+
+    setLoadingDeleteGroup(true);
 
     try {
-      const reportIds = report.items.map((item) => Number(item.ID ?? item.id));
-
-      console.log("Report IDs to delete:", reportIds);
+      const reportIds = selectedReportGroup.items.map((item) =>
+        Number(item.ID ?? item.id),
+      );
 
       if (
         reportIds.length === 0 ||
@@ -263,17 +274,20 @@ const Reports = () => {
 
       await getReports();
 
-      setSelectedReport(null);
+      setShowDeleteGroupConfirm(false);
+      setSelectedReportGroup(null);
 
-      window.alert("Laporan berhasil dihapus.");
+      toast.success("Laporan berhasil dihapus.");
     } catch (error) {
       console.error("Failed to delete report group:", error);
 
       await getReports();
 
-      window.alert(
+      toast.error(
         error instanceof Error ? error.message : "Gagal menghapus laporan.",
       );
+    } finally {
+      setLoadingDeleteGroup(false);
     }
   };
 
@@ -548,6 +562,71 @@ const Reports = () => {
           onEditReport={handleEditReport}
           onDeleteReport={handleDeleteReport}
         />
+      )}
+
+      {/* Delete Report Group Confirmation Modal */}
+      {showDeleteGroupConfirm && selectedReportGroup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md animate-fade-in rounded-2xl bg-white p-6 shadow-xl">
+            {/* Icon */}
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600">
+              <Trash2 size={28} />
+            </div>
+
+            {/* Content */}
+            <div className="mt-4 text-center">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Hapus Seluruh Laporan?
+              </h3>
+
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                Apakah kamu yakin ingin menghapus seluruh laporan stok pada
+                tanggal ini? Data yang sudah dihapus tidak dapat dikembalikan.
+              </p>
+
+              <div className="mt-3 rounded-lg bg-red-50 px-3 py-3 text-sm text-red-700">
+                <p className="font-semibold">{selectedReportGroup.name}</p>
+                <p className="mt-1">
+                  Total {selectedReportGroup.items.length} menu akan dihapus.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={confirmDeleteReportGroup}
+                disabled={loadingDeleteGroup}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingDeleteGroup ? (
+                  <>
+                    <RefreshCw size={15} className="animate-spin" />
+                    Menghapus...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={15} />
+                    Ya, Hapus Semua
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteGroupConfirm(false);
+                  setSelectedReportGroup(null);
+                }}
+                disabled={loadingDeleteGroup}
+                className="flex-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
