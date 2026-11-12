@@ -44,10 +44,10 @@ const ReportDetailModal = ({
   >({});
 
   const startEditing = (item: DailyStockReportType) => {
-    setEditingId(item.id);
+    setEditingId(item.id || 0);
 
     setEditForm({
-      [item.id]: {
+      [item.id || 0]: {
         initialCount: Number(item.initialCount),
         soldCount: Number(item.soldCount),
         remainingCount: Number(item.remainingCount),
@@ -217,13 +217,13 @@ const ReportDetailModal = ({
 
                 <tbody className="divide-y divide-slate-100">
                   {report.items.map((item) => {
-                    const isEditing = editingId === item.id;
+                    const isEditing = editingId === item.id || 0;
 
                     const inputClass =
                       "w-20 rounded-lg border border-orange-200 bg-white px-2 py-1.5 text-center text-sm outline-none focus:border-orange-500";
 
                     return (
-                      <tr key={item.id} className="hover:bg-slate-50">
+                      <tr key={item.id || 0} className="hover:bg-slate-50">
                         <td className="px-4 py-3.5 font-medium text-slate-800">
                           {item.eventName || `Menu #${item.eventId}`}
                         </td>
@@ -235,14 +235,14 @@ const ReportDetailModal = ({
                               min="0"
                               className={inputClass}
                               value={
-                                editForm[item.id]?.initialCount ??
+                                editForm[item.id || 0]?.initialCount ??
                                 item.initialCount
                               }
                               onChange={(e) =>
                                 setEditForm((prev) => ({
                                   ...prev,
-                                  [item.id]: {
-                                    ...prev[item.id],
+                                  [item.id || 0]: {
+                                    ...prev[item.id || 0],
                                     initialCount: Number(e.target.value),
                                   },
                                 }))
@@ -260,13 +260,14 @@ const ReportDetailModal = ({
                               min="0"
                               className={inputClass}
                               value={
-                                editForm[item.id]?.soldCount ?? item.soldCount
+                                editForm[item.id || 0]?.soldCount ??
+                                item.soldCount
                               }
                               onChange={(e) =>
                                 setEditForm((prev) => ({
                                   ...prev,
-                                  [item.id]: {
-                                    ...prev[item.id],
+                                  [item.id || 0]: {
+                                    ...prev[item.id || 0],
                                     soldCount: Number(e.target.value),
                                   },
                                 }))
@@ -284,14 +285,14 @@ const ReportDetailModal = ({
                               min="0"
                               className={inputClass}
                               value={
-                                editForm[item.id]?.remainingCount ??
+                                editForm[item.id || 0]?.remainingCount ??
                                 item.remainingCount
                               }
                               onChange={(e) =>
                                 setEditForm((prev) => ({
                                   ...prev,
-                                  [item.id]: {
-                                    ...prev[item.id],
+                                  [item.id || 0]: {
+                                    ...prev[item.id || 0],
                                     remainingCount: Number(e.target.value),
                                   },
                                 }))
@@ -308,12 +309,12 @@ const ReportDetailModal = ({
                               type="number"
                               min="0"
                               className={`${inputClass} w-28`}
-                              value={editForm[item.id]?.hpp ?? item.hpp}
+                              value={editForm[item.id || 0]?.hpp ?? item.hpp}
                               onChange={(e) =>
                                 setEditForm((prev) => ({
                                   ...prev,
-                                  [item.id]: {
-                                    ...prev[item.id],
+                                  [item.id || 0]: {
+                                    ...prev[item.id || 0],
                                     hpp: Number(e.target.value),
                                   },
                                 }))
@@ -327,9 +328,9 @@ const ReportDetailModal = ({
                         <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-orange-600">
                           {formatRupiah(
                             isEditing
-                              ? (editForm[item.id]?.remainingCount ??
+                              ? (editForm[item.id || 0]?.remainingCount ??
                                   item.remainingCount) *
-                                  (editForm[item.id]?.hpp ?? item.hpp)
+                                  (editForm[item.id || 0]?.hpp ?? item.hpp)
                               : Number(item.hppLost),
                           )}
                         </td>
@@ -337,10 +338,11 @@ const ReportDetailModal = ({
                         <td className="whitespace-nowrap px-4 py-3.5 text-right font-medium text-green-600">
                           {formatRupiah(
                             (isEditing
-                              ? (editForm[item.id]?.soldCount ?? item.soldCount)
+                              ? (editForm[item.id || 0]?.soldCount ??
+                                item.soldCount)
                               : Number(item.soldCount)) *
                               (isEditing
-                                ? (editForm[item.id]?.hpp ?? item.hpp)
+                                ? (editForm[item.id || 0]?.hpp ?? item.hpp)
                                 : Number(item.hpp)),
                           )}
                         </td>
@@ -352,7 +354,7 @@ const ReportDetailModal = ({
                                 <button
                                   type="button"
                                   disabled={saving}
-                                  onClick={() => handleSave(item.id)}
+                                  onClick={() => handleSave(item.id || 0)}
                                   className="rounded-lg bg-green-500 p-2 text-white transition hover:bg-green-600 disabled:opacity-50"
                                   title="Simpan perubahan"
                                 >
@@ -382,7 +384,7 @@ const ReportDetailModal = ({
 
                                 <button
                                   type="button"
-                                  onClick={() => onDeleteReport(item.id)}
+                                  onClick={() => onDeleteReport(item.id || 0)}
                                   className="rounded-lg border border-red-200 p-2 text-red-500 transition hover:bg-red-50"
                                   title="Hapus laporan"
                                 >
