@@ -160,7 +160,9 @@ export interface UpdateOrderRequest {
 }
 
 export interface DailyStockReportType {
-  id: number;
+  ID: number;
+  id?: number;
+
   userId: number;
   eventId: number;
   eventName: string;
@@ -175,7 +177,6 @@ export interface DailyStockReportType {
 
   event?: EventType;
 }
-
 export interface DailyStockReportSummary {
   totalSold: number;
   totalRemaining: number;

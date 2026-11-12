@@ -149,30 +149,31 @@ const useReports = (
   );
 
   // DELETE Daily Report
-  const deleteReport = useCallback(
-    async (id: number) => {
-      try {
-        setError("");
+  const deleteReport = useCallback(async (id: number) => {
+    try {
+      setError("");
 
-        const response = await CustomFetch.delete(`/reports/${id}`);
-
-        await getReports();
-
-        return response.data;
-      } catch (error: any) {
-        console.error("Failed to delete daily stock report:", error);
-
-        setError(
-          error?.response?.data?.error ||
-            error?.response?.data?.message ||
-            "Gagal menghapus laporan stok",
-        );
-
-        throw error;
+      if (!Number.isInteger(id) || id <= 0) {
+        throw new Error(`Invalid report ID: ${id}`);
       }
-    },
-    [getReports],
-  );
+
+      const response = await CustomFetch.delete(`/reports/${id}`);
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Failed to delete daily stock report:", error);
+
+      setError(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          error?.message ||
+          "Gagal menghapus laporan stok",
+      );
+
+      throw error;
+    }
+  }, []);
+  
 
   useEffect(() => {
     getReports();

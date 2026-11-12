@@ -1,4 +1,4 @@
-import { Eye, FileBarChart } from "lucide-react";
+import { FileBarChart, Trash2 } from "lucide-react";
 import type { DailyReportGroup } from "../../types/report";
 import { formatReportDate } from "../../utils/reportHelpers";
 
@@ -15,6 +15,7 @@ type ReportTableProps = {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (value: number) => void;
   onSelectReport: (report: DailyReportGroup) => void;
+  onDeleteReport: (report: DailyReportGroup) => void;
 };
 
 const ReportTable = ({
@@ -28,6 +29,7 @@ const ReportTable = ({
   onPageChange,
   onItemsPerPageChange,
   onSelectReport,
+  onDeleteReport,
 }: ReportTableProps) => {
   return (
     <div className="overflow-x-auto">
@@ -35,12 +37,15 @@ const ReportTable = ({
         <thead className="border-b border-slate-100 text-xs text-slate-500">
           <tr>
             <th className="px-5 py-3 font-medium">Nama Laporan</th>
+
             <th className="hidden sm:table-cell px-5 py-3 font-medium">
               Tanggal Laporan
             </th>
+
             <th className="hidden sm:table-cell px-5 py-3 text-center font-medium">
               Jumlah Menu
             </th>
+
             <th className="hidden md:table-cell px-5 py-3 text-center font-medium">
               Aksi
             </th>
@@ -74,18 +79,20 @@ const ReportTable = ({
                 {report.items.length} Menu
               </td>
 
-              <td className="hidden md:table-cell px-5 py-3.5 text-center">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectReport(report);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-orange-200 px-3 py-2 text-xs font-medium text-orange-600 transition hover:bg-orange-50"
-                >
-                  <Eye size={14} />
-                  Detail
-                </button>
+              <td className="hidden md:table-cell px-5 py-3.5">
+                <div className="flex items-center justify-center gap-5">
+                  {/* Hapus */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteReport(report);
+                    }}
+                    className="inline-flex items-center font-medium text-red-200 transition bg-red-500 p-2 rounded-xl hover:bg-red-50"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

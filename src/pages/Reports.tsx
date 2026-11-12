@@ -239,6 +239,44 @@ const Reports = () => {
     }
   };
 
+  // Delete Report Group
+  const handleDeleteReportGroup = async (report: DailyReportGroup) => {
+    const confirmed = window.confirm(
+      `Apakah kamu yakin ingin menghapus seluruh laporan tanggal ${report.name}?\n\nTotal ${report.items.length} menu akan dihapus.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const reportIds = report.items.map((item) => Number(item.ID ?? item.id));
+
+      console.log("Report IDs to delete:", reportIds);
+
+      if (
+        reportIds.length === 0 ||
+        reportIds.some((id) => !Number.isInteger(id) || id <= 0)
+      ) {
+        throw new Error("ID laporan tidak valid.");
+      }
+
+      await Promise.all(reportIds.map((id) => deleteReport(id)));
+
+      await getReports();
+
+      setSelectedReport(null);
+
+      window.alert("Laporan berhasil dihapus.");
+    } catch (error) {
+      console.error("Failed to delete report group:", error);
+
+      await getReports();
+
+      window.alert(
+        error instanceof Error ? error.message : "Gagal menghapus laporan.",
+      );
+    }
+  };
+
   // Reset halaman ketika filter berubah
   useEffect(() => {
     setCurrentPage(1);
@@ -318,6 +356,7 @@ const Reports = () => {
           setCurrentPage(1);
         }}
         onSelectReport={setSelectedReport}
+        onDeleteReport={handleDeleteReportGroup}
       />
     );
   };
